@@ -4,7 +4,7 @@ class Events(db.Model):
     __tablename__ = 'events'
 
     id = db.Column(db.Integer, primary_key=True)
-    meetup_user_id = db.Column(db.String())
+    event_id = db.Column(db.String())
     event_name = db.Column(db.String())
     event_date = db.Column(db.DateTime())
 
