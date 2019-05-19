@@ -19,8 +19,7 @@ db.init_app(app)
 # export APP_SETTINGS="config.DevelopmentConfig"
 # export DATABASE_URL="postgresql://localhost/meetup_attendees"
 
-from models import Events
-
+from models import Events, Attendance
 
 @app.route('/')
 def hello():
@@ -29,19 +28,38 @@ def hello():
 @app.route('/events', methods=['GET', 'POST'])
 def events():
     my_data = json.loads(request.data.decode('utf-8'))
-    print(my_data)
     name = my_data['eventDate']
     print(name)
     event = Events(
         event_name = my_data['eventName'],
         event_date = my_data['eventDate']
     )
-    print(event)
+    
     try:
         db.session.add(event)
+
+        # Need to commit event first so I can use the event_id to link two tables
         db.session.commit()
-    except: 
-        print("Unable to add item to database.")
+        attendees = []
+        for attendee in my_data['attendees']:
+            attendees.append(Attendance(
+                meetup_user_id = attendee['userId'],
+                event_id = event.id,
+                did_attend = attendee['didAttend'],
+                did_rsvp = attendee['didRSVP'],
+                title = attendee['title'],
+                event_host = attendee['eventHost'],
+                rsvp_date = attendee['rsvpDate'],
+                date_joined_group = attendee['dateJoinedGroup']
+            ))
+        print(attendees)
+        print(event)
+        db.session.bulk_save_objects(attendees)
+        db.session.commit()
+
+        
+    except Exception as exception: 
+        print(exception)
     return jsonify(my_data)
 
 
