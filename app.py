@@ -185,5 +185,31 @@ def events():
         return jsonify(data=events)
 
 
+@app.route('/attendance', methods=['GET'])
+def attendance():
+    try:
+        data = json.loads(request.data.decode("utf-8"))
+        events = data["eventIds"]
+        attendance = Attendance.query.filter(
+            Attendance.event_id.in_(events)).all()
+
+        full_attendance = []
+        for attendee_event in attendance:
+            full_attendance.append({
+                "meetupUserId": attendee_event.meetup_user_id,
+                "id": attendee_event.id,
+                "did_attend": attendee_event.did_attend,
+                "did_rsvp": attendee_event.did_rsvp,
+                "title": attendee_event.title,
+                "event_host": attendee_event.event_host,
+                "rsvp_date": attendee_event.rsvp_date,
+                "date_joined_group": attendee_event.date_joined_group
+            })
+        return jsonify(data=full_attendance)
+    except Exception as exception:
+        print(exception)
+        return "Bad Job"
+
+
 if __name__ == '__main__':
     app.run()
