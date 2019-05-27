@@ -4,7 +4,6 @@ import os
 import json
 import requests
 
-from six.moves.urllib.request import urlopen
 from functools import wraps
 from flask_cors import cross_origin
 from jose import jwt
@@ -40,9 +39,7 @@ def get_token_auth_header():
     """Obtains the Access Token from the Authorization Header
     """
 
-    print (request.headers)
     auth = request.headers.get("Authorization", None)
-    print(auth)
     if not auth:
         raise AuthError({"code": "authorization_header_missing",
                         "description":
@@ -74,13 +71,9 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = get_token_auth_header()
-        print("https://"+AUTH0_DOMAIN+"/.well-known/jwks.json")
         jsonurl = requests.get("https://"+AUTH0_DOMAIN+"/.well-known/jwks.json").json()
-        print(jsonurl)
         jwks = json.loads(json.dumps(jsonurl))
-        print(jwks)
         unverified_header = jwt.get_unverified_header(token)
-        print(unverified_header)
         rsa_key = {}
         for key in jwks["keys"]:
             if key["kid"] == unverified_header["kid"]:
@@ -91,8 +84,6 @@ def requires_auth(f):
                     "n": key["n"],
                     "e": key["e"]
                 }
-        print("rsa_key")
-        print(rsa_key)
         if rsa_key:
             try:
                 payload = jwt.decode(
@@ -117,7 +108,6 @@ def requires_auth(f):
                                     " token."}, 401)
 
             _request_ctx_stack.top.current_user = payload
-            print(payload)
             return f(*args, **kwargs)
         raise AuthError({"code": "invalid_header",
                         "description": "Unable to find appropriate key"}, 401)
@@ -131,7 +121,7 @@ from models import Events, Attendance
 def hello():
     return "Hello World!"
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 @cross_origin(headers=['Content-Type', 'Authorization'])
 @requires_auth
 def login():

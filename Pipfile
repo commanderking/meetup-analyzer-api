@@ -15,7 +15,6 @@ flask-script = "*"
 requests = "*"
 python-jose-cryptodome = "*"
 flask-cors = "*"
-six = "*"
 
 [requires]
 python_version = "3.5"
