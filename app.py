@@ -5,10 +5,12 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 import json
 import requests
+import datetime
 
 from functools import wraps
 from flask_cors import cross_origin
 from jose import jwt
+from flask_cors import CORS
 
 AUTH0_DOMAIN = os.environ["AUTH0_DOMAIN"]
 API_AUDIENCE = os.environ["API_AUDIENCE"]
@@ -19,6 +21,7 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
+CORS(app)
 
 # Error handler
 
@@ -176,16 +179,31 @@ def events():
         return jsonify(my_data)
     else:
         events = []
-        for event in Events.query.all():
-            events.append({
-                "id": event.id,
-                "event_name": event.event_name,
-                "event_date": event.event_date
-            })
+        for event in Events.query.order_by(Events.event_date.desc()).all():
+            try:
+                attendees = Attendance.query.filter(
+                    Attendance.event_id == str(event.id), Attendance.did_attend == True).all()
+                rsvps = Attendance.query.filter(Attendance.event_id == str(
+                    event.id), Attendance.did_rsvp == True).all()
+                attendees_who_rsvpd = Attendance.query.filter(Attendance.event_id == str(
+                    event.id), Attendance.did_rsvp == True, Attendance.did_attend == True).all()
+                events.append({
+                    # Needs to be string here beacuse when front end sends event id back to get attendance data
+                    # Database expects getting rows by matching id string, not number
+                    "id": str(event.id),
+                    "name": event.event_name,
+                    "date": event.event_date,
+                    "attendees": len(attendees),
+                    "rsvps": len(rsvps),
+                    "attendeesWhoRsvpd": len(attendees_who_rsvpd)
+                })
+            except Exception as exception:
+                print(exception)
+                return "Could not get the event data"
         return jsonify(data=events)
 
 
-@app.route('/attendance', methods=['GET'])
+@app.route('/attendance', methods=['POST'])
 def attendance():
     try:
         data = json.loads(request.data.decode("utf-8"))

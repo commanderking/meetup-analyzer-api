@@ -1,5 +1,6 @@
 from extensions import db
 
+
 class Events(db.Model):
     __tablename__ = 'events'
 
@@ -8,7 +9,7 @@ class Events(db.Model):
     event_name = db.Column(db.String())
     event_date = db.Column(db.DateTime())
 
-    def __init__(self, event_name, event_date ):
+    def __init__(self, event_name, event_date):
         self.event_name = event_name
         self.event_date = event_date
 
