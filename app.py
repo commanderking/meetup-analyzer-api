@@ -182,15 +182,15 @@ def events():
         for event in Events.query.order_by(Events.event_date.desc()).all():
             try:
                 attendees = Attendance.query.filter(
-                    Attendance.event_id == str(event.id), Attendance.did_attend == True).all()
-                rsvps = Attendance.query.filter(Attendance.event_id == str(
-                    event.id), Attendance.did_rsvp == True).all()
-                attendees_who_rsvpd = Attendance.query.filter(Attendance.event_id == str(
-                    event.id), Attendance.did_rsvp == True, Attendance.did_attend == True).all()
+                    Attendance.event_id == event.id, Attendance.did_attend == True).all()
+                rsvps = Attendance.query.filter(Attendance.event_id ==
+                                                event.id, Attendance.did_rsvp == True).all()
+                attendees_who_rsvpd = Attendance.query.filter(Attendance.event_id ==
+                                                              event.id, Attendance.did_rsvp == True, Attendance.did_attend == True).all()
                 events.append({
                     # Needs to be string here beacuse when front end sends event id back to get attendance data
                     # Database expects getting rows by matching id string, not number
-                    "id": str(event.id),
+                    "id": event.id,
                     "name": event.event_name,
                     "date": event.event_date,
                     "attendees": len(attendees),
@@ -216,12 +216,12 @@ def attendance():
             full_attendance.append({
                 "meetupUserId": attendee_event.meetup_user_id,
                 "id": attendee_event.id,
-                "did_attend": attendee_event.did_attend,
-                "did_rsvp": attendee_event.did_rsvp,
+                "didAttend": attendee_event.did_attend,
+                "didRSVP": attendee_event.did_rsvp,
                 "title": attendee_event.title,
-                "event_host": attendee_event.event_host,
-                "rsvp_date": attendee_event.rsvp_date,
-                "date_joined_group": attendee_event.date_joined_group
+                "eventHost": attendee_event.event_host,
+                "rsvpDate": attendee_event.rsvp_date,
+                "dateJoinedGroup": attendee_event.date_joined_group
             })
         return jsonify(data=full_attendance)
     except Exception as exception:

@@ -8,6 +8,7 @@ class Events(db.Model):
     event_id = db.Column(db.String())
     event_name = db.Column(db.String())
     event_date = db.Column(db.DateTime())
+    attendance = db.relationship('Attendance', backref='events', lazy=True)
 
     def __init__(self, event_name, event_date):
         self.event_name = event_name
@@ -22,7 +23,8 @@ class Attendance(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     meetup_user_id = db.Column(db.String())
-    event_id = db.Column(db.String())
+    event_id = db.Column(db.Integer, db.ForeignKey(
+        'events.id'), nullable=False)
     did_attend = db.Column(db.Boolean())
     did_rsvp = db.Column(db.Boolean())
     title = db.Column(db.String())
