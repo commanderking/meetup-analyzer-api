@@ -2,6 +2,8 @@ from models import Events, Attendance
 from extensions import db
 from flask import Flask, request, jsonify, _request_ctx_stack
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
+
 import os
 import json
 import requests
@@ -224,6 +226,28 @@ def attendance():
                 "dateJoinedGroup": attendee_event.date_joined_group
             })
         return jsonify(data=full_attendance)
+    except Exception as exception:
+        print(exception)
+        return "Bad Job"
+
+
+@app.route('/meetup/summary', methods=['GET'])
+def meetupSummary():
+    try:
+        meetupAttendees = Attendance.query.filter(
+            Attendance.did_attend == True, Attendance.did_rsvp == True).count()
+        totalAttendees = Attendance.query.filter(
+            Attendance.did_attend == True).count()
+        totalRSVPs = Attendance.query.filter(
+            Attendance.did_rsvp == True).count()
+        meetupGroupSummary = {
+            "meetupAttendeesWhoRSVPed": meetupAttendees,
+            "totalAttendees": totalAttendees,
+            "totalRSVPs": totalRSVPs
+        }
+
+        return jsonify(data=meetupGroupSummary)
+
     except Exception as exception:
         print(exception)
         return "Bad Job"
