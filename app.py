@@ -240,10 +240,17 @@ def meetupSummary():
             Attendance.did_attend == True).count()
         totalRSVPs = Attendance.query.filter(
             Attendance.did_rsvp == True).count()
+        uniqueAttendees = Attendance.query.filter(
+            Attendance.did_attend).distinct(Attendance.meetup_user_id).count()
+        uniqueRSVPs = Attendance.query.filter(
+            Attendance.did_rsvp).distinct(Attendance.meetup_user_id).count()
+
         meetupGroupSummary = {
             "meetupAttendeesWhoRSVPed": meetupAttendees,
             "totalAttendees": totalAttendees,
-            "totalRSVPs": totalRSVPs
+            "totalRSVPs": totalRSVPs,
+            "uniqueAttendees": uniqueAttendees,
+            "uniqueRSVPs": uniqueRSVPs
         }
 
         return jsonify(data=meetupGroupSummary)
