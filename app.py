@@ -7,7 +7,7 @@ from sqlalchemy.sql import func
 import os
 import json
 import requests
-import datetime
+from datetime import datetime
 
 from functools import wraps
 from flask_cors import cross_origin
@@ -235,22 +235,36 @@ def attendance():
 def meetupSummary():
     try:
         meetupAttendees = Attendance.query.filter(
-            Attendance.did_attend == True, Attendance.did_rsvp == True).count()
-        totalAttendees = Attendance.query.filter(
-            Attendance.did_attend == True).count()
-        totalRSVPs = Attendance.query.filter(
-            Attendance.did_rsvp == True).count()
-        uniqueAttendees = Attendance.query.filter(
-            Attendance.did_attend).distinct(Attendance.meetup_user_id).count()
-        uniqueRSVPs = Attendance.query.filter(
+            Attendance.did_attend, Attendance.did_rsvp.count()
+        totalAttendees=Attendance.query.filter(
+            Attendance.did_attend).count()
+        totalRSVPs=Attendance.query.filter(
+            Attendance.did_rsvp).count()
+        uniqueAttendees=Attendance.query.filter(
+            Attendance.did_attend, Attendance.did_rsvp).distinct(Attendance.meetup_user_id).count()
+        uniqueRSVPs=Attendance.query.filter(
             Attendance.did_rsvp).distinct(Attendance.meetup_user_id).count()
 
-        meetupGroupSummary = {
+        firstDateOfYear="2019/01/01"
+        dateTimedFirstDateOfYear=datetime.strptime(
+            firstDateOfYear, "%Y/%m/%d")
+
+        uniqueAttendeesThisYear=Attendance.query.join(Events).filter(
+            Attendance.did_attend, Attendance.did_rsvp, Events.event_date >= dateTimedFirstDateOfYear).distinct(Attendance.meetup_user_id).count()
+
+        uniqueRSVPsThisYear=Attendance.query.join(Events).filter(
+            Attendance.did_rsvp, Events.event_date >= dateTimedFirstDateOfYear).distinct(Attendance.meetup_user_id).count()
+
+        meetupGroupSummary={
             "meetupAttendeesWhoRSVPed": meetupAttendees,
             "totalAttendees": totalAttendees,
             "totalRSVPs": totalRSVPs,
             "uniqueAttendees": uniqueAttendees,
-            "uniqueRSVPs": uniqueRSVPs
+            "uniqueRSVPs": uniqueRSVPs,
+            "currentYear": {
+                "uniqueAttendees": uniqueAttendeesThisYear,
+                "uniqueRSVPs": uniqueRSVPsThisYear
+            }
         }
 
         return jsonify(data=meetupGroupSummary)
