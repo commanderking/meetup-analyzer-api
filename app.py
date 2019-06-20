@@ -235,35 +235,53 @@ def attendance():
 def meetupSummary():
     try:
         meetupAttendees = Attendance.query.filter(
-            Attendance.did_attend, Attendance.did_rsvp.count()
-        totalAttendees=Attendance.query.filter(
+            Attendance.did_attend, Attendance.did_rsvp).count()
+        totalAttendees = Attendance.query.filter(
             Attendance.did_attend).count()
-        totalRSVPs=Attendance.query.filter(
+        totalRSVPs = Attendance.query.filter(
             Attendance.did_rsvp).count()
-        uniqueAttendees=Attendance.query.filter(
+        uniqueAttendees = Attendance.query.filter(
             Attendance.did_attend, Attendance.did_rsvp).distinct(Attendance.meetup_user_id).count()
-        uniqueRSVPs=Attendance.query.filter(
+        uniqueRSVPs = Attendance.query.filter(
             Attendance.did_rsvp).distinct(Attendance.meetup_user_id).count()
 
-        firstDateOfYear="2019/01/01"
-        dateTimedFirstDateOfYear=datetime.strptime(
+        firstDateOfYear = "2019/01/01"
+        dateTimedFirstDateOfYear = datetime.strptime(
             firstDateOfYear, "%Y/%m/%d")
 
-        uniqueAttendeesThisYear=Attendance.query.join(Events).filter(
+        uniqueAttendeesThisYear = Attendance.query.join(Events).filter(
             Attendance.did_attend, Attendance.did_rsvp, Events.event_date >= dateTimedFirstDateOfYear).distinct(Attendance.meetup_user_id).count()
 
-        uniqueRSVPsThisYear=Attendance.query.join(Events).filter(
+        attendeesThisYear = Attendance.query.join(Events).filter(
+            Events.event_date >= dateTimedFirstDateOfYear, Attendance.did_attend).count()
+
+        uniqueRSVPsThisYear = Attendance.query.join(Events).filter(
             Attendance.did_rsvp, Events.event_date >= dateTimedFirstDateOfYear).distinct(Attendance.meetup_user_id).count()
 
-        meetupGroupSummary={
+        rsvpsThisYear = Attendance.query.join(Events).filter(
+            Attendance.did_rsvp, Events.event_date >= dateTimedFirstDateOfYear).count()
+
+        participationThisYear = Attendance.query.join(Events).filter(
+            Events.event_date >= dateTimedFirstDateOfYear).count()
+
+        # SELECT COUNT(id), meetup_user_id FROM event_attendance GROUP BY meetup_user_id;
+        counts = Attendance.query.group_by(
+            Attendance.meetup_user_id).filter().with_entities(Attendance.meetup_user_id, func.count(Attendance.id)).all()
+
+        print(counts)
+
+        meetupGroupSummary = {
             "meetupAttendeesWhoRSVPed": meetupAttendees,
             "totalAttendees": totalAttendees,
             "totalRSVPs": totalRSVPs,
             "uniqueAttendees": uniqueAttendees,
             "uniqueRSVPs": uniqueRSVPs,
             "currentYear": {
+                "totalAttendees": attendeesThisYear,
                 "uniqueAttendees": uniqueAttendeesThisYear,
-                "uniqueRSVPs": uniqueRSVPsThisYear
+                "totalRSVPs": rsvpsThisYear,
+                "uniqueRSVPs": uniqueRSVPsThisYear,
+                "participation": participationThisYear
             }
         }
 
