@@ -2,7 +2,7 @@ from models import Events, Attendance
 from extensions import db
 from flask import Flask, request, jsonify, _request_ctx_stack
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, case, literal_column
 
 import os
 import json
@@ -298,6 +298,39 @@ def meetupSummary():
     except Exception as exception:
         print(exception)
         return "Bad Job"
+
+
+@app.route('/event/prediction', methods=['GET'])
+def prediction():
+    data = json.loads(request.data.decode("utf-8"))
+    users = data["meetupUserIds"]
+
+    attendance = Attendance.query.filter(
+        Attendance.meetup_user_id.in_(users)).with_entities(Attendance.meetup_user_id, func.count(case([((Attendance.did_attend == True), Attendance.did_attend)], else_=literal_column("NULL"))).label('count_did_attend'), func.count(Attendance.did_rsvp).label('count_did_rsvp')).group_by(Attendance.meetup_user_id)
+
+    attendanceHistory = []
+    for attendee in attendance:
+        (meetupUserId, eventsAttendedCount, eventsRSVPedCount) = attendee
+        attendanceHistory.append({
+            "meetupUserId": meetupUserId,
+            "eventsAttendedCount": eventsAttendedCount,
+            "eventsRSVPedCount": eventsRSVPedCount
+        })
+
+    attendanceForThoseWhoAttdendedOneMeetup = Attendance.query.with_entities(Attendance.meetup_user_id, func.count(case([((Attendance.did_attend == True), Attendance.did_attend)], else_=literal_column(
+        "NULL"))).label('count_did_attend'), func.count(Attendance.did_rsvp).label('count_did_rsvp')).group_by(Attendance.meetup_user_id).having(func.count(Attendance.did_rsvp) == 1).all()
+
+    attendeeHistoryForThoseWhoAttendedOnlyOneMeetup = {
+        "attended": 0,
+        "rsvped": 0
+    }
+    for attendee in attendanceForThoseWhoAttdendedOneMeetup:
+        (meetupUserId, didAttend, didRSVP) = attendee
+        attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["attended"] += didAttend
+        attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["rsvped"] += 1
+    print(attendeeHistoryForThoseWhoAttendedOnlyOneMeetup)
+
+    return jsonify(data={"memberAttendanceHistory": attendanceHistory, "attendeeHistoryForThoseWhoAttendedOnlyOneMeetup": attendeeHistoryForThoseWhoAttendedOnlyOneMeetup})
 
 
 if __name__ == '__main__':
