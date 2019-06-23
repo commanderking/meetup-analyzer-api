@@ -255,6 +255,9 @@ def meetupSummary():
         attendeesThisYear = Attendance.query.join(Events).filter(
             Events.event_date >= dateTimedFirstDateOfYear, Attendance.did_attend).count()
 
+        attendeesWhoRSVPdThisYear = Attendance.query.join(Events).filter(
+            Attendance.did_rsvp, Attendance.did_attend, Events.event_date >= dateTimedFirstDateOfYear, Attendance.did_attend).count()
+
         uniqueRSVPsThisYear = Attendance.query.join(Events).filter(
             Attendance.did_rsvp, Events.event_date >= dateTimedFirstDateOfYear).distinct(Attendance.meetup_user_id).count()
 
@@ -270,6 +273,10 @@ def meetupSummary():
 
         print(counts)
 
+        test = Attendance.query.join(Events).filter(
+            Events.event_date >= dateTimedFirstDateOfYear, Attendance.did_attend)
+        print(test.filter(Attendance.did_rsvp).all())
+
         meetupGroupSummary = {
             "meetupAttendeesWhoRSVPed": meetupAttendees,
             "totalAttendees": totalAttendees,
@@ -279,6 +286,7 @@ def meetupSummary():
             "currentYear": {
                 "totalAttendees": attendeesThisYear,
                 "uniqueAttendees": uniqueAttendeesThisYear,
+                "attendeesWhoRSVPd": attendeesWhoRSVPdThisYear,
                 "totalRSVPs": rsvpsThisYear,
                 "uniqueRSVPs": uniqueRSVPsThisYear,
                 "participation": participationThisYear
