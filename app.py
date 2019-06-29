@@ -300,10 +300,10 @@ def meetupSummary():
         return "Bad Job"
 
 
-@app.route('/event/prediction', methods=['GET'])
+@app.route('/event/prediction', methods=['POST'])
 def prediction():
     data = json.loads(request.data.decode("utf-8"))
-    users = data["meetupUserIds"]
+    users = data["userIds"]
 
     attendance = Attendance.query.filter(
         Attendance.meetup_user_id.in_(users)).with_entities(Attendance.meetup_user_id, func.count(case([((Attendance.did_attend == True), Attendance.did_attend)], else_=literal_column("NULL"))).label('count_did_attend'), func.count(Attendance.did_rsvp).label('count_did_rsvp')).group_by(Attendance.meetup_user_id)
@@ -313,8 +313,8 @@ def prediction():
         (meetupUserId, eventsAttendedCount, eventsRSVPedCount) = attendee
         attendanceHistory.append({
             "meetupUserId": meetupUserId,
-            "eventsAttendedCount": eventsAttendedCount,
-            "eventsRSVPedCount": eventsRSVPedCount
+            "attended": eventsAttendedCount,
+            "rsvped": eventsRSVPedCount
         })
 
     attendanceForThoseWhoAttdendedOneMeetup = Attendance.query.with_entities(Attendance.meetup_user_id, func.count(case([((Attendance.did_attend == True), Attendance.did_attend)], else_=literal_column(
@@ -328,7 +328,6 @@ def prediction():
         (meetupUserId, didAttend, didRSVP) = attendee
         attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["attended"] += didAttend
         attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["rsvped"] += 1
-    print(attendeeHistoryForThoseWhoAttendedOnlyOneMeetup)
 
     return jsonify(data={"memberAttendanceHistory": attendanceHistory, "attendeeHistoryForThoseWhoAttendedOnlyOneMeetup": attendeeHistoryForThoseWhoAttendedOnlyOneMeetup})
 
