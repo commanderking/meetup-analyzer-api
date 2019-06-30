@@ -14,6 +14,8 @@ from flask_cors import cross_origin
 from jose import jwt
 from flask_cors import CORS
 
+from eventPrediction.eventPredictionUtils import formatDataForModel
+
 AUTH0_DOMAIN = os.environ["AUTH0_DOMAIN"]
 API_AUDIENCE = os.environ["API_AUDIENCE"]
 ALGORITHMS = ["RS256"]
@@ -317,9 +319,16 @@ def prediction():
             "rsvped": eventsRSVPedCount
         })
 
-    attendanceForThoseWhoAttdendedOneMeetup = Attendance.query.with_entities(Attendance.meetup_user_id, func.count(case([((Attendance.did_attend == True), Attendance.did_attend)], else_=literal_column(
-        "NULL"))).label('count_did_attend'), func.count(Attendance.did_rsvp).label('count_did_rsvp')).group_by(Attendance.meetup_user_id).having(func.count(Attendance.did_rsvp) == 1).all()
-
+    attendanceForThoseWhoAttdendedOneMeetup = (
+        Attendance.query
+        .with_entities(
+            Attendance.meetup_user_id,
+            func.count(case([(Attendance.did_attend == True, Attendance.did_attend)],
+                            else_=literal_column("NULL"))).label('count_did_attend'),
+            func.count(Attendance.did_rsvp).label('count_did_rsvp')
+        )
+        .group_by(Attendance.meetup_user_id).having(func.count(Attendance.did_rsvp) == 1).all()
+    )
     attendeeHistoryForThoseWhoAttendedOnlyOneMeetup = {
         "attended": 0,
         "rsvped": 0
@@ -328,6 +337,31 @@ def prediction():
         (meetupUserId, didAttend, didRSVP) = attendee
         attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["attended"] += didAttend
         attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["rsvped"] += 1
+
+    events = (
+        Attendance.query
+        .with_entities(
+
+            func.count(case([(Attendance.did_attend == True, Attendance.did_rsvp)],
+                            else_=literal_column("NULL"))).label('count_did_attend'),
+
+            func.count(case([(Attendance.did_rsvp, 1)],
+                            else_=literal_column("NULL"))).label('count_did_rsvp'),
+            # Right now this includes those without user_ids such as (NONE)
+            func.array_agg(Attendance.meetup_user_id).label('meetup_user_ids'),
+            Attendance.event_id,
+            Events.event_name,
+            Events.event_date
+        )
+        .join(Events)
+        .group_by(Attendance.event_id, Events.event_name, Events.event_date)
+        .all()
+    )
+
+    print(events)
+
+    test = formatDataForModel(
+        attendeeHistoryForThoseWhoAttendedOnlyOneMeetup=attendeeHistoryForThoseWhoAttendedOnlyOneMeetup, memberAttendanceHistory=attendanceHistory)
 
     return jsonify(data={"memberAttendanceHistory": attendanceHistory, "attendeeHistoryForThoseWhoAttendedOnlyOneMeetup": attendeeHistoryForThoseWhoAttendedOnlyOneMeetup})
 
