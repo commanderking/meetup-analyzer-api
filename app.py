@@ -307,8 +307,19 @@ def prediction():
     data = json.loads(request.data.decode("utf-8"))
     users = data["userIds"]
 
-    attendance = Attendance.query.filter(
-        Attendance.meetup_user_id.in_(users)).with_entities(Attendance.meetup_user_id, func.count(case([((Attendance.did_attend == True), Attendance.did_attend)], else_=literal_column("NULL"))).label('count_did_attend'), func.count(Attendance.did_rsvp).label('count_did_rsvp')).group_by(Attendance.meetup_user_id)
+    attendance = (
+        Attendance.query
+        .filter(
+            Attendance.meetup_user_id.in_(users))
+        .with_entities(
+            Attendance.meetup_user_id,
+            func.count(case([((Attendance.did_attend == True), Attendance.did_attend)],
+                            else_=literal_column("NULL"))).label('count_did_attend'),
+            func.count(Attendance.did_rsvp).label('count_did_rsvp'))
+        .group_by(Attendance.meetup_user_id)
+    )
+
+    print(attendance)
 
     attendanceHistory = []
     for attendee in attendance:
@@ -338,27 +349,58 @@ def prediction():
         attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["attended"] += didAttend
         attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["rsvped"] += 1
 
+    # Get important data for each event, necessary for linear regression
     events = (
         Attendance.query
         .with_entities(
-
+            Attendance.event_id,
+            Events.event_name,
+            Events.event_date,
             func.count(case([(Attendance.did_attend == True, Attendance.did_rsvp)],
                             else_=literal_column("NULL"))).label('count_did_attend'),
 
             func.count(case([(Attendance.did_rsvp, 1)],
                             else_=literal_column("NULL"))).label('count_did_rsvp'),
             # Right now this includes those without user_ids such as (NONE)
-            func.array_agg(Attendance.meetup_user_id).label('meetup_user_ids'),
-            Attendance.event_id,
-            Events.event_name,
-            Events.event_date
+            func.array_agg(Attendance.meetup_user_id).label('meetup_user_ids')
         )
         .join(Events)
         .group_by(Attendance.event_id, Events.event_name, Events.event_date)
         .all()
     )
 
-    print(events)
+    events_with_attendees = []
+    for event in events:
+        (event_id, event_name, event_date,
+         attendee_count, rsvp_count, attendeeIds) = event
+
+        attendanceHistoryForUsersAtEvent = (
+            Attendance.query
+            .filter(
+                Attendance.meetup_user_id.in_(attendeeIds),
+                Attendance.rsvp_date <= event_date
+            )
+            .with_entities(
+                Attendance.meetup_user_id,
+                func.count(case([((Attendance.did_attend == True), Attendance.did_attend)],
+                                else_=literal_column("NULL"))).label('count_did_attend'),
+                func.count(Attendance.did_rsvp).label('count_did_rsvp'))
+            .group_by(Attendance.meetup_user_id)
+            .all()
+        )
+
+        attendanceRates = []
+        for userAttendanceHistory in attendanceHistoryForUsersAtEvent:
+            (id, attended, rsvped) = userAttendanceHistory
+            attendanceRates.append(attended / rsvped)
+
+        events_with_attendees.append({
+            "previousAttendanceRatesSummed": sum(attendanceRates),
+            "count": len(attendanceRates)
+        })
+        # print(sum(attendanceRates))
+        # print(attendanceHistoryForUsersAtEvent)
+        print(events_with_attendees)
 
     test = formatDataForModel(
         attendeeHistoryForThoseWhoAttendedOnlyOneMeetup=attendeeHistoryForThoseWhoAttendedOnlyOneMeetup, memberAttendanceHistory=attendanceHistory)
