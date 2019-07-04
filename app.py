@@ -319,8 +319,6 @@ def prediction():
         .group_by(Attendance.meetup_user_id)
     )
 
-    print(attendance)
-
     attendanceHistory = []
     for attendee in attendance:
         (meetupUserId, eventsAttendedCount, eventsRSVPedCount) = attendee
@@ -374,6 +372,7 @@ def prediction():
         (event_id, event_name, event_date,
          attendee_count, rsvp_count, attendeeIds) = event
 
+        # Getting previous attendance rates for each attendee at the event
         attendanceHistoryForUsersAtEvent = (
             Attendance.query
             .filter(
@@ -382,7 +381,7 @@ def prediction():
             )
             .with_entities(
                 Attendance.meetup_user_id,
-                func.count(case([((Attendance.did_attend == True), Attendance.did_attend)],
+                func.count(case([((Attendance.did_attend == True), 1)],
                                 else_=literal_column("NULL"))).label('count_did_attend'),
                 func.count(Attendance.did_rsvp).label('count_did_rsvp'))
             .group_by(Attendance.meetup_user_id)
@@ -395,13 +394,18 @@ def prediction():
             attendanceRates.append(attended / rsvped)
 
         events_with_attendees.append({
+            "eventId": event_id,
+            "event_name": event_name,
+            "event_date": event_date,
+            "attendee_count": attendee_count,
+            "rsvp_count": rsvp_count,
             "previousAttendanceRatesSummed": sum(attendanceRates),
             "count": len(attendanceRates)
         })
-        # print(sum(attendanceRates))
-        # print(attendanceHistoryForUsersAtEvent)
-        print(events_with_attendees)
 
+    print(events_with_attendees)
+
+    print(attendeeHistoryForThoseWhoAttendedOnlyOneMeetup)
     test = formatDataForModel(
         attendeeHistoryForThoseWhoAttendedOnlyOneMeetup=attendeeHistoryForThoseWhoAttendedOnlyOneMeetup, memberAttendanceHistory=attendanceHistory)
 
