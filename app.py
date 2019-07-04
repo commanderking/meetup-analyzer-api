@@ -14,7 +14,7 @@ from flask_cors import cross_origin
 from jose import jwt
 from flask_cors import CORS
 
-from eventPrediction.eventPredictionUtils import formatDataForModel
+from eventPrediction.eventPredictionUtils import getLinearRegressionPrediction
 
 AUTH0_DOMAIN = os.environ["AUTH0_DOMAIN"]
 API_AUDIENCE = os.environ["API_AUDIENCE"]
@@ -354,7 +354,7 @@ def prediction():
             Attendance.event_id,
             Events.event_name,
             Events.event_date,
-            func.count(case([(Attendance.did_attend == True, Attendance.did_rsvp)],
+            func.count(case([(Attendance.did_attend == True, 1)],
                             else_=literal_column("NULL"))).label('count_did_attend'),
 
             func.count(case([(Attendance.did_rsvp, 1)],
@@ -363,6 +363,10 @@ def prediction():
             func.array_agg(Attendance.meetup_user_id).label('meetup_user_ids')
         )
         .join(Events)
+        .filter(
+            # Filter out those attendees that attended, but did not RSVP (there's no way for us to predict them)
+            Attendance.meetup_user_id != None
+        )
         .group_by(Attendance.event_id, Events.event_name, Events.event_date)
         .all()
     )
@@ -403,11 +407,9 @@ def prediction():
             "count": len(attendanceRates)
         })
 
-    print(events_with_attendees)
-
     print(attendeeHistoryForThoseWhoAttendedOnlyOneMeetup)
-    test = formatDataForModel(
-        attendeeHistoryForThoseWhoAttendedOnlyOneMeetup=attendeeHistoryForThoseWhoAttendedOnlyOneMeetup, memberAttendanceHistory=attendanceHistory)
+    test = getLinearRegressionPrediction(
+        regressionInput=events_with_attendees)
 
     return jsonify(data={"memberAttendanceHistory": attendanceHistory, "attendeeHistoryForThoseWhoAttendedOnlyOneMeetup": attendeeHistoryForThoseWhoAttendedOnlyOneMeetup})
 
