@@ -14,7 +14,7 @@ from flask_cors import cross_origin
 from jose import jwt
 from flask_cors import CORS
 
-from eventPrediction.eventPredictionUtils import formatDataForModel
+from eventPrediction.eventPredictionUtils import getLinearRegressionPrediction, getPredictedAttendeesOfMembers
 
 AUTH0_DOMAIN = os.environ["AUTH0_DOMAIN"]
 API_AUDIENCE = os.environ["API_AUDIENCE"]
@@ -307,8 +307,18 @@ def prediction():
     data = json.loads(request.data.decode("utf-8"))
     users = data["userIds"]
 
-    attendance = Attendance.query.filter(
-        Attendance.meetup_user_id.in_(users)).with_entities(Attendance.meetup_user_id, func.count(case([((Attendance.did_attend == True), Attendance.did_attend)], else_=literal_column("NULL"))).label('count_did_attend'), func.count(Attendance.did_rsvp).label('count_did_rsvp')).group_by(Attendance.meetup_user_id)
+    # First goal is to get prediction just based on previous attedance of users
+    attendance = (
+        Attendance.query
+        .filter(
+            Attendance.meetup_user_id.in_(users))
+        .with_entities(
+            Attendance.meetup_user_id,
+            func.count(case([((Attendance.did_attend == True), Attendance.did_attend)],
+                            else_=literal_column("NULL"))).label('count_did_attend'),
+            func.count(Attendance.did_rsvp).label('count_did_rsvp'))
+        .group_by(Attendance.meetup_user_id)
+    )
 
     attendanceHistory = []
     for attendee in attendance:
@@ -319,6 +329,8 @@ def prediction():
             "rsvped": eventsRSVPedCount
         })
 
+    # For those who this is the first recorded attendance, (they may have attended before, just not up to the point where we started recording)
+    # let's just use the average attendance rate for those who've attended once
     attendanceForThoseWhoAttdendedOneMeetup = (
         Attendance.query
         .with_entities(
@@ -326,6 +338,10 @@ def prediction():
             func.count(case([(Attendance.did_attend == True, Attendance.did_attend)],
                             else_=literal_column("NULL"))).label('count_did_attend'),
             func.count(Attendance.did_rsvp).label('count_did_rsvp')
+        )
+        .filter(
+            # Filter out those attendees that attended, but did not RSVP (there's no way for us to predict them)
+            Attendance.meetup_user_id != None
         )
         .group_by(Attendance.meetup_user_id).having(func.count(Attendance.did_rsvp) == 1).all()
     )
@@ -338,32 +354,95 @@ def prediction():
         attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["attended"] += didAttend
         attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["rsvped"] += 1
 
+    singleAttendanceRate = attendeeHistoryForThoseWhoAttendedOnlyOneMeetup[
+        "attended"] / attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["rsvped"]
+    # Linear Regression - Get important data for each event
     events = (
         Attendance.query
         .with_entities(
-
-            func.count(case([(Attendance.did_attend == True, Attendance.did_rsvp)],
+            Attendance.event_id,
+            Events.event_name,
+            Events.event_date,
+            func.count(case([(Attendance.did_attend, 1)],
                             else_=literal_column("NULL"))).label('count_did_attend'),
 
             func.count(case([(Attendance.did_rsvp, 1)],
                             else_=literal_column("NULL"))).label('count_did_rsvp'),
             # Right now this includes those without user_ids such as (NONE)
-            func.array_agg(Attendance.meetup_user_id).label('meetup_user_ids'),
-            Attendance.event_id,
-            Events.event_name,
-            Events.event_date
+            func.array_agg(Attendance.meetup_user_id).label('meetup_user_ids')
         )
         .join(Events)
+        .filter(
+            # Filter out those attendees that attended, but did not RSVP (there's no way for us to predict them)
+            Attendance.meetup_user_id != None
+        )
         .group_by(Attendance.event_id, Events.event_name, Events.event_date)
+        # Order for sake of pandas and being able to use training data from middle
+        .order_by(Events.event_date.asc())
         .all()
     )
 
-    print(events)
+    # Loop through events to get the previous attendane rate prior to each event
+    events_with_attendees = []
+    for event in events:
+        (event_id, event_name, event_date,
+         attendees_who_rsvped_count, rsvp_count, attendeeIds) = event
 
-    test = formatDataForModel(
-        attendeeHistoryForThoseWhoAttendedOnlyOneMeetup=attendeeHistoryForThoseWhoAttendedOnlyOneMeetup, memberAttendanceHistory=attendanceHistory)
+        # Getting previous attendance rates for each attendee at the event
+        attendanceHistoryForUsersAtEvent = (
+            Attendance.query
+            .filter(
+                Attendance.meetup_user_id.in_(attendeeIds),
+                # We only care about events that were before the date of the event (not the overall history of the attendee up to today)
+                Events.event_date < event_date
+            )
+            .with_entities(
+                Attendance.meetup_user_id,
+                func.count(case([((Attendance.did_attend == True), 1)],
+                                else_=literal_column("NULL"))).label('count_did_attend'),
+                func.count(Attendance.did_rsvp).label('count_did_rsvp'))
+            .group_by(Attendance.meetup_user_id)
+            .join(Events)
+            .all()
+        )
 
-    return jsonify(data={"memberAttendanceHistory": attendanceHistory, "attendeeHistoryForThoseWhoAttendedOnlyOneMeetup": attendeeHistoryForThoseWhoAttendedOnlyOneMeetup})
+        attendanceRates = []
+        for userAttendanceHistory in attendanceHistoryForUsersAtEvent:
+            (id, attended, rsvped) = userAttendanceHistory
+            attendanceRates.append(attended / rsvped)
+
+        attendeesWhoHaveRSVPdBefore = sum(attendanceRates)
+
+        count_previous_attendees = len(attendanceRates)
+
+        events_with_attendees.append({
+            "eventId": event_id,
+            "event_name": event_name,
+            "event_date": event_date,
+            "attendees_who_rsvped_count": attendees_who_rsvped_count,
+            "rsvp_count": rsvp_count,
+            "previous_attendance_rates_sum": sum(attendanceRates),
+            "count_previous_attendees": count_previous_attendees,
+            "old_attendees": count_previous_attendees,
+            "new_attendees": (rsvp_count - count_previous_attendees) * singleAttendanceRate
+        })
+
+    new_event = {
+        "rsvp_count": len(users),
+        "old_attendees": len(attendanceHistory),
+        "previous_attendance_rates_sum": getPredictedAttendeesOfMembers(attendanceHistory),
+        "new_attendees": (len(users) - len(attendanceHistory)) * singleAttendanceRate
+    }
+
+    regressionPrediction = getLinearRegressionPrediction(
+        regressionInput=events_with_attendees, newEvent=[new_event])
+
+    print(regressionPrediction)
+    return jsonify(data={
+        "memberAttendanceHistory": attendanceHistory,
+        "attendeeHistoryForThoseWhoAttendedOnlyOneMeetup": attendeeHistoryForThoseWhoAttendedOnlyOneMeetup,
+        "regressionPrediction": regressionPrediction
+    })
 
 
 if __name__ == '__main__':

@@ -17,6 +17,10 @@ requests = "*"
 python-jose-cryptodome = "*"
 flask-cors = "*"
 six = "*"
+pandas = "*"
+numpy = "*"
+sklearn = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.5"
