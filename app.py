@@ -14,7 +14,7 @@ from flask_cors import cross_origin
 from jose import jwt
 from flask_cors import CORS
 
-from eventPrediction.eventPredictionUtils import getLinearRegressionPrediction
+from eventPrediction.eventPredictionUtils import getLinearRegressionPrediction, getPredictedAttendeesOfMembers
 
 AUTH0_DOMAIN = os.environ["AUTH0_DOMAIN"]
 API_AUDIENCE = os.environ["API_AUDIENCE"]
@@ -354,6 +354,8 @@ def prediction():
         attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["attended"] += didAttend
         attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["rsvped"] += 1
 
+    singleAttendanceRate = attendeeHistoryForThoseWhoAttendedOnlyOneMeetup[
+        "attended"] / attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["rsvped"]
     # Linear Regression - Get important data for each event
     events = (
         Attendance.query
@@ -403,8 +405,7 @@ def prediction():
             .join(Events)
             .all()
         )
-        if event_id == 9:
-            print(attendanceHistoryForUsersAtEvent)
+
         attendanceRates = []
         for userAttendanceHistory in attendanceHistoryForUsersAtEvent:
             (id, attended, rsvped) = userAttendanceHistory
@@ -420,18 +421,28 @@ def prediction():
             "event_date": event_date,
             "attendees_who_rsvped_count": attendees_who_rsvped_count,
             "rsvp_count": rsvp_count,
-            "previousAttendanceRatesSummed": sum(attendanceRates),
+            "previous_attendance_rates_sum": sum(attendanceRates),
             "count_previous_attendees": count_previous_attendees,
             "old_attendees": count_previous_attendees,
-            "new_attendees": rsvp_count - count_previous_attendees
+            "new_attendees": (rsvp_count - count_previous_attendees) * singleAttendanceRate
         })
 
-    print(attendeeHistoryForThoseWhoAttendedOnlyOneMeetup)
+    new_event = {
+        "rsvp_count": len(users),
+        "old_attendees": len(attendanceHistory),
+        "previous_attendance_rates_sum": getPredictedAttendeesOfMembers(attendanceHistory),
+        "new_attendees": (len(users) - len(attendanceHistory)) * singleAttendanceRate
+    }
 
-    test = getLinearRegressionPrediction(
-        regressionInput=events_with_attendees)
+    regressionPrediction = getLinearRegressionPrediction(
+        regressionInput=events_with_attendees, newEvent=[new_event])
 
-    return jsonify(data={"memberAttendanceHistory": attendanceHistory, "attendeeHistoryForThoseWhoAttendedOnlyOneMeetup": attendeeHistoryForThoseWhoAttendedOnlyOneMeetup})
+    print(regressionPrediction)
+    return jsonify(data={
+        "memberAttendanceHistory": attendanceHistory,
+        "attendeeHistoryForThoseWhoAttendedOnlyOneMeetup": attendeeHistoryForThoseWhoAttendedOnlyOneMeetup,
+        "regressionPrediction": regressionPrediction
+    })
 
 
 if __name__ == '__main__':
