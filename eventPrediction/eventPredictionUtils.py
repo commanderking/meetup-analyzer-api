@@ -12,10 +12,25 @@ def getPredictedAttendeesOfMembers(attendanceHistoryForUsersAtEvent):
     attendanceRates = []
     for userAttendanceHistory in attendanceHistoryForUsersAtEvent:
         (id, attended, rsvped) = userAttendanceHistory
-        attendanceRates.append(
-            userAttendanceHistory["attended"] / userAttendanceHistory["rsvped"])
+        attendanceRates.append(attended / rsvped)
 
     return sum(attendanceRates)
+
+# params: Array<{ meetupUserId: int, count_did_attend: int, count_did_rsvp: int}>
+# return: { attended: int, rsvped: int }
+
+
+def getAttendanceRateForThoseAttendingSingleMeetup(attendance):
+    attendeeHistoryForThoseWhoAttendedOnlyOneMeetup = {
+        "attended": 0,
+        "rsvped": 0
+    }
+    for attendee in attendance:
+        (meetupUserId, didAttend, didRSVP) = attendee
+        attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["attended"] += didAttend
+        attendeeHistoryForThoseWhoAttendedOnlyOneMeetup["rsvped"] += 1
+    return attendeeHistoryForThoseWhoAttendedOnlyOneMeetup
+
 
 # Modeling based on: https://towardsdatascience.com/a-beginners-guide-to-linear-regression-in-python-with-scikit-learn-83a8f7ae2b4f
 
@@ -55,7 +70,7 @@ def getLinearRegressionPrediction(regressionInput, newEvent):
 
     # if we want to just check how predictions are going for the last two
     # just for reference
-    #extra_pred = regressor.predict(dataset.tail(2)[x_columns])
+    # extra_pred = regressor.predict(dataset.tail(2)[x_columns])
 
     '''
     print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
