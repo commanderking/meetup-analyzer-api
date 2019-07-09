@@ -433,7 +433,7 @@ def prediction():
 
     return jsonify(data={
         "memberAttendanceHistory": attendanceHistory,
-        "attendeeHistoryForThoseWhoAttendedOnlyOneMeetup": singleAttendanceCountAndRSVPs,
+        "singleAttendanceCountAndRSVPs": singleAttendanceCountAndRSVPs,
         "regressionPrediction": regressionPrediction
     })
 
