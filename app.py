@@ -1,6 +1,6 @@
 from models import Events, Attendance
 from extensions import db
-from flask import Flask, request, jsonify, _request_ctx_stack
+from flask import Flask, request, jsonify, _request_ctx_stack, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func, case, literal_column
 
@@ -20,7 +20,8 @@ AUTH0_DOMAIN = os.environ["AUTH0_DOMAIN"]
 API_AUDIENCE = os.environ["API_AUDIENCE"]
 ALGORITHMS = ["RS256"]
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="web/build/static",
+            template_folder="web/build")
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -131,9 +132,10 @@ def requires_auth(f):
 # Might need to reference here for heroku deployment: https://realpython.com/flask-by-example-part-2-postgres-sqlalchemy-and-alembic/
 
 
-@app.route('/')
-def hello():
-    return "Hello World!"
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def single_page_app(path):
+    return render_template('index.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
