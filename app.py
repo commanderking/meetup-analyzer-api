@@ -249,6 +249,7 @@ def meetupSummary():
         uniqueRSVPs = Attendance.query.filter(
             Attendance.did_rsvp).distinct(Attendance.meetup_user_id).count()
 
+        # Need to be smarter about this - hardcoded just for 2019
         firstDateOfYear = "2019/01/01"
         dateTimedFirstDateOfYear = datetime.strptime(
             firstDateOfYear, "%Y/%m/%d")
@@ -282,7 +283,7 @@ def meetupSummary():
         print(test.filter(Attendance.did_rsvp).all())
 
         meetupGroupSummary = {
-            "meetupAttendeesWhoRSVPed": meetupAttendees,
+            "attendeesWhoRSVPd": meetupAttendees,
             "totalAttendees": totalAttendees,
             "totalRSVPs": totalRSVPs,
             "uniqueAttendees": uniqueAttendees,

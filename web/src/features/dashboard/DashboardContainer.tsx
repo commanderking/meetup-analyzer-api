@@ -53,12 +53,13 @@ const DashboardContainer = ({ auth }: any) => {
 
   if (!summaryData) return <div>Loading...</div>;
 
+  const { currentYear } = summaryData;
   const {
     totalAttendees,
     totalRSVPs,
     uniqueAttendees,
     uniqueRSVPs
-  } = summaryData;
+  } = currentYear;
   return (
     <div>
       {/* <LoginContainer auth={auth} /> */}

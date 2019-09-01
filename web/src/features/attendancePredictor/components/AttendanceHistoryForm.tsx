@@ -2,9 +2,9 @@ import React from "react";
 import { Button, Label, FormGroup, Input, Form, Col } from "reactstrap";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
+import TextField from "@material-ui/core/TextField";
 
-const labelColumns = 3;
-const inputColumns = 9;
+const inputColumns = 12;
 
 type Props = {
   rawMeetupData: any;
@@ -31,13 +31,25 @@ const AttendanceHistoryForm = ({
 
       <div>
         <FormGroup row>
-          <Label sm={labelColumns}>Event Attendance Data: </Label>
           <Col sm={inputColumns}>
-            <Input
+            {/* <Input
               rows={10}
               type="textarea"
               value={rawMeetupData}
               placeholder={"Enter csv data here..."}
+              onChange={(event: any) => {
+                setRawMeetupData(event.target.value);
+              }}
+            /> */}
+            <TextField
+              id="outlined-dense-multiline"
+              label="Event Attendance Data"
+              margin="normal"
+              variant="outlined"
+              multiline
+              fullWidth
+              autoFocus
+              rows="10"
               onChange={(event: any) => {
                 setRawMeetupData(event.target.value);
               }}

@@ -7,7 +7,7 @@ export type MeetupSummaryDTO = {
     uniqueAttendees: number;
     uniqueRSVPs: number;
   };
-  meetupAttendeesWhoRSVPed: number;
+  attendeesWhoRSVPd: number;
   totalAttendees: number;
   totalRSVPs: number;
   uniqueAttendees: number;
