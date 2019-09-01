@@ -2,6 +2,8 @@ import React from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { DesignColors } from "../../constants/Design";
+import Card from "@material-ui/core/Card";
+
 type AttendanceCardProps = {
   headerText: string;
   bodyText: number | string;
@@ -14,48 +16,53 @@ const AttendanceCard = ({
   subBodyText
 }: AttendanceCardProps) => {
   return (
-    <div
+    <Card
       css={css`
          {
-          background-color: #bcbec0;
           margin: auto;
-          width: 80%;
-          margin-bottom: 20px;
+          width: 90%;
           height: 100%;
-          box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-            0 6px 20px 0 rgba(0, 0, 0, 0.19);
         }
       `}
     >
-      <h4
-        css={css`
-           {
-            background-color: ${DesignColors.THEME_1};
-            padding: 10px;
-          }
-        `}
-      >
-        {headerText}
-      </h4>
       <div
         css={css`
            {
-            padding: ${subBodyText ? 10 : 20}px;
+            background-color: #bcbec0;
+            padding-bottom: 20px;
           }
         `}
       >
-        <h2
+        <h4
           css={css`
              {
-              margin-bottom: 0;
+              background-color: ${DesignColors.THEME_1};
+              padding: 10px;
             }
           `}
         >
-          {bodyText}
-        </h2>
-        {subBodyText && <div>({subBodyText})</div>}
+          {headerText}
+        </h4>
+        <div
+          css={css`
+             {
+              padding: ${subBodyText ? 10 : 20}px;
+            }
+          `}
+        >
+          <h2
+            css={css`
+               {
+                margin-bottom: 0;
+              }
+            `}
+          >
+            {bodyText}
+          </h2>
+          {subBodyText && <div>({subBodyText})</div>}
+        </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

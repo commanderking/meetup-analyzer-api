@@ -1,7 +1,7 @@
 import React from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-import { Card, CardSubtitle } from "reactstrap";
+import Card from "@material-ui/core/Card";
 import moment from "moment";
 import { EventResponse } from "../../../requests/eventTypes";
 import EventCardStat from "./EventCardStat";
@@ -43,7 +43,7 @@ const EventCard = ({ event }: Props) => {
             `}
           >
             <h5>{name}</h5>
-            <CardSubtitle>{moment(date).format("MM/DD/YY")}</CardSubtitle>
+            <h6>{moment(date).format("MM/DD/YY")}</h6>
           </div>
           <div
             css={css`
