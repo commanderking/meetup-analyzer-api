@@ -3,7 +3,7 @@ import { Label, FormGroup, Input, Form, Col } from "reactstrap";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import Button from "@material-ui/core/Button";
-import AttendanceHistoryDropZone from "features/attendancePredictor/components/AttendanceHistoryDropZone";
+import CsvDropZone from "common/components/CsvDropZone";
 
 const inputColumns = 12;
 
@@ -30,9 +30,9 @@ const AttendanceHistoryForm = ({ setRawMeetupData, submitJSON }: Props) => {
       <div>
         <FormGroup row>
           <Col sm={inputColumns}>
-            <AttendanceHistoryDropZone
+            <CsvDropZone
               setCanSubmit={setCanSubmit}
-              setRawMeetupData={setRawMeetupData}
+              setCsvData={setRawMeetupData}
             />
           </Col>
         </FormGroup>
