@@ -1,8 +1,9 @@
-import React from "react";
-import { Button, Label, FormGroup, Input, Form, Col } from "reactstrap";
+import React, { useState } from "react";
+import { Label, FormGroup, Input, Form, Col } from "reactstrap";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import AttendanceHistoryDropZone from "features/attendancePredictor/components/AttendanceHistoryDropZone";
 
 const inputColumns = 12;
 
@@ -12,11 +13,8 @@ type Props = {
   submitJSON: any;
 };
 
-const AttendanceHistoryForm = ({
-  rawMeetupData,
-  setRawMeetupData,
-  submitJSON
-}: Props) => {
+const AttendanceHistoryForm = ({ setRawMeetupData, submitJSON }: Props) => {
+  const [canSubmit, setCanSubmit] = useState(false);
   return (
     <Form
       css={css`
@@ -32,33 +30,22 @@ const AttendanceHistoryForm = ({
       <div>
         <FormGroup row>
           <Col sm={inputColumns}>
-            {/* <Input
-              rows={10}
-              type="textarea"
-              value={rawMeetupData}
-              placeholder={"Enter csv data here..."}
-              onChange={(event: any) => {
-                setRawMeetupData(event.target.value);
-              }}
-            /> */}
-            <TextField
-              id="outlined-dense-multiline"
-              label="Event Attendance Data"
-              margin="normal"
-              variant="outlined"
-              multiline
-              fullWidth
-              autoFocus
-              rows="10"
-              onChange={(event: any) => {
-                setRawMeetupData(event.target.value);
-              }}
+            <AttendanceHistoryDropZone
+              setCanSubmit={setCanSubmit}
+              setRawMeetupData={setRawMeetupData}
             />
           </Col>
         </FormGroup>
         <div />
       </div>
-      <Button color="success" type="submit" onClick={submitJSON}>
+
+      <Button
+        variant="contained"
+        color="primary"
+        type="submit"
+        onClick={submitJSON}
+        disabled={!canSubmit}
+      >
         Summarize Data
       </Button>
     </Form>

@@ -15,7 +15,6 @@ const loadAttendanceHistory = async (
   setAttendanceHistory: any
 ) => {
   const attendanceHistory = await getAttendanceHistoryForUsers({ userIds });
-  console.log("attendanceHistory", attendanceHistory);
   setAttendanceHistory(attendanceHistory);
 };
 
