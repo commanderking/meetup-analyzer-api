@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-import LoginContainer from "../login/LoginContainer";
 import { useEventsCall } from "../../context/eventsHook";
 import EventCard from "features/dashboard/components/EventCard";
 import AttendanceCard from "features/singleMeetingAnalysis/components/AttendanceCard";

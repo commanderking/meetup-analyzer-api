@@ -1,5 +1,3 @@
-import { AttendanceHistory } from "requests/attendanceHistoryTypes";
-
 export const getAttendanceHistoryForUsers = async ({
   userIds
 }: {

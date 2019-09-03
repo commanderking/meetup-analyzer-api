@@ -11,24 +11,27 @@ type Props = {
   setCsvData: Function;
 };
 
-function CsvDropZone({ setCanSubmit, setCsvData }: Props) {
-  const onDrop = useCallback(acceptedFiles => {
-    if (setCanSubmit) {
-      setCanSubmit(true);
-    }
-    const reader = new FileReader();
-    reader.onabort = () => console.log("file reading was aborted");
-    reader.onerror = () => console.log("file reading has failed");
-    reader.onload = () => {
-      // @ts-ignore - looks like no typescript for csv yet
-      setCsvData(reader.result);
-    };
+const CsvDropZone = ({ setCanSubmit, setCsvData }: Props) => {
+  const onDrop = useCallback(
+    acceptedFiles => {
+      if (setCanSubmit) {
+        setCanSubmit(true);
+      }
+      const reader = new FileReader();
+      reader.onabort = () => console.log("file reading was aborted");
+      reader.onerror = () => console.log("file reading has failed");
+      reader.onload = () => {
+        // @ts-ignore - looks like no typescript for csv yet
+        setCsvData(reader.result);
+      };
 
-    reader.readAsBinaryString(acceptedFiles[0]);
-  }, []);
+      reader.readAsBinaryString(acceptedFiles[0]);
+    },
+    [setCanSubmit, setCsvData]
+  );
 
   // @ts-ignore - do we need special types here to use the hook properly here?
-  const { getRootProps, getInputProps, acceptedFiles, open } = useDropzone({
+  const { getRootProps, getInputProps, acceptedFiles } = useDropzone({
     accept: ".csv",
     multiple: false,
     onDrop
@@ -83,6 +86,6 @@ function CsvDropZone({ setCanSubmit, setCsvData }: Props) {
       </Paper>
     </div>
   );
-}
+};
 
 export default CsvDropZone;

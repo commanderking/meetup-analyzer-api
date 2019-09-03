@@ -25,10 +25,6 @@ const SingleMeetingForm = ({
   const classes = useStyles();
   const [rawMeetupData, setMeetupData] = useState("");
 
-  const handleChange = (event: any) => {
-    setMeetupData(event.target.value);
-  };
-
   const handleEventDateChange = (event: any) => {
     setEventDate(event.target.value);
   };

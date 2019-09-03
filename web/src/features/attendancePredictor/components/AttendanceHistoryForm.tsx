@@ -1,11 +1,8 @@
 import React, { useState } from "react";
-import { Label, FormGroup, Input, Form, Col } from "reactstrap";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import Button from "@material-ui/core/Button";
 import CsvDropZone from "common/components/CsvDropZone";
-
-const inputColumns = 12;
 
 type Props = {
   rawMeetupData: any;
@@ -16,7 +13,7 @@ type Props = {
 const AttendanceHistoryForm = ({ setRawMeetupData, submitJSON }: Props) => {
   const [canSubmit, setCanSubmit] = useState(false);
   return (
-    <Form
+    <form
       css={css`
          {
           width: 700px;
@@ -28,15 +25,10 @@ const AttendanceHistoryForm = ({ setRawMeetupData, submitJSON }: Props) => {
       <h3>Insert CSV Data for Upcoming Meetup</h3>
 
       <div>
-        <FormGroup row>
-          <Col sm={inputColumns}>
-            <CsvDropZone
-              setCanSubmit={setCanSubmit}
-              setCsvData={setRawMeetupData}
-            />
-          </Col>
-        </FormGroup>
-        <div />
+        <CsvDropZone
+          setCanSubmit={setCanSubmit}
+          setCsvData={setRawMeetupData}
+        />
       </div>
 
       <Button
@@ -48,7 +40,7 @@ const AttendanceHistoryForm = ({ setRawMeetupData, submitJSON }: Props) => {
       >
         Summarize Data
       </Button>
-    </Form>
+    </form>
   );
 };
 
