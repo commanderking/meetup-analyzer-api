@@ -32,9 +32,8 @@ export const SingleMeetupSummary = ({
         }
       `}
     >
-      <h3>
-        Summary of Meetup: {eventName} {eventDate && `on ${eventDate}`}
-      </h3>
+      <h3>{eventName}</h3>
+      {eventDate && <h5>{eventDate}</h5>}
       <div
         id="SingleMeetupSummary"
         css={css`
