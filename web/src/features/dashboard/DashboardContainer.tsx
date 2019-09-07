@@ -7,9 +7,10 @@ import AttendanceCard from "features/singleMeetingAnalysis/components/Attendance
 import { EventResponse } from "../../requests/eventTypes";
 import { getMeetupSummaryData } from "requests/meetupSummaryRequest";
 import { MeetupSummaryDTO } from "requests/meetupSummaryRequestTypes";
-import { Button } from "reactstrap";
+import Button from "@material-ui/core/Button";
 // @ts-ignore
 import { Link } from "react-router-dom";
+import Grid from "@material-ui/core/Grid";
 
 const login = async (authenticationToken: string) => {
   await fetch("http://localhost:5000/login", {
@@ -62,10 +63,7 @@ const DashboardContainer = ({ auth }: any) => {
   return (
     <div>
       {/* <LoginContainer auth={auth} /> */}
-      <div>Dashboard</div>
-      <Link to="/prediction">
-        <Button>Predict Attendance for Next Event</Button>
-      </Link>
+
       <div
         css={css`
            {
@@ -93,6 +91,14 @@ const DashboardContainer = ({ auth }: any) => {
           <AttendanceCard headerText="Unique RSVPs" bodyText={uniqueRSVPs} />
         </div>
       </div>
+      <h3>Actions</h3>
+      <Link to="/">
+        <Button variant="contained">Summarize Event</Button>
+      </Link>
+
+      <Link to="/prediction">
+        <Button variant="contained">Predict Attendance for Next Event</Button>
+      </Link>
       <div
         css={css`
            {
@@ -102,20 +108,13 @@ const DashboardContainer = ({ auth }: any) => {
         `}
       >
         <h3>Event Details</h3>
-        <div
-          css={css`
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-column-gap: 20px;
-            grid-row-gap: 20px;
-            grid-auto-rows: 1fr;
-            padding: 20px;
-          `}
-        >
+        <Grid container spacing={3}>
           {events.map((event: EventResponse) => (
-            <EventCard key={event.id} event={event} />
+            <Grid item xs={12} sm={6} md={4}>
+              <EventCard key={event.id} event={event} />
+            </Grid>
           ))}
-        </div>
+        </Grid>
       </div>
     </div>
   );
