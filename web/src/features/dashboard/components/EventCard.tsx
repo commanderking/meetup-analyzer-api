@@ -5,9 +5,9 @@ import Card from "@material-ui/core/Card";
 import moment from "moment";
 import { EventResponse } from "../../../requests/eventTypes";
 import EventCardStat from "./EventCardStat";
-// @ts-ignore
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
+import RouterLink from "common/components/RouterLink";
 
 type Props = {
   event: EventResponse;
@@ -49,25 +49,11 @@ const EventCard = ({ event }: Props) => {
         <EventCardStat stat={attendees} description="Attendees" />
         <EventCardStat stat={attendancePercent} description="Show Rate" />
       </div>
-      <Link
-        to={`/event/${id}`}
-        css={css`
-           {
-            text-decoration: none;
-            &:focus,
-            &:hover,
-            &:visited,
-            &:link,
-            &:active {
-              text-decoration: none;
-            }
-          }
-        `}
-      >
+      <RouterLink to={`/event/${id}`}>
         <Button color="primary" variant="outlined">
           Details
         </Button>
-      </Link>
+      </RouterLink>
     </Card>
   );
 };

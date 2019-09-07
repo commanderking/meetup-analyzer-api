@@ -38,11 +38,14 @@ const CsvDropZone = ({ setCanSubmit, setCsvData }: Props) => {
   });
 
   return (
-    <div className="container">
+    <div className="CsvDropZone">
       <Paper
         css={css`
            {
+            width: 100%;
             padding: 20px;
+            margin-top: 20px;
+            margin-bottom: 20px;
           }
         `}
       >

@@ -4,9 +4,10 @@ import { useState } from "react";
 import csv from "csvtojson";
 import { bindRawMeetupData } from "../SingleMeetingAnalysisUtils";
 // import { Button, Label, FormGroup, Input, Form, Col } from "reactstrap";
-import { Button, FormControl, Input, InputLabel } from "@material-ui/core";
+import { Button, FormControl, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import CsvDropZone from "common/components/CsvDropZone";
+import CsvSetupSteps from "features/singleMeetingAnalysis/components/CsvSetupSteps";
 
 const useStyles = makeStyles({
   formControl: {
@@ -51,14 +52,16 @@ const SingleMeetingForm = ({
       <h1>Enter Meetup Attendance CSV Data</h1>
       <div
         css={css`
-          width: 700px;
+          width: 500px;
           margin: auto;
         `}
       >
         <form>
           <FormControl className={classes.formControl}>
-            <InputLabel>Event Name: </InputLabel>
-            <Input
+            <TextField
+              margin="normal"
+              label="Event Name"
+              variant="outlined"
               value={eventName}
               placeholder="Name of your event..."
               onChange={handleEventNameChange}
@@ -67,8 +70,10 @@ const SingleMeetingForm = ({
             />
           </FormControl>
           <FormControl className={classes.formControl}>
-            <InputLabel>Event Date: </InputLabel>
-            <Input
+            <TextField
+              margin="normal"
+              variant="outlined"
+              label="Event Date"
               value={eventDate}
               placeholder="MM/DD/YYYY"
               onChange={handleEventDateChange}
@@ -76,9 +81,14 @@ const SingleMeetingForm = ({
               fullWidth
             />
           </FormControl>
+          <CsvSetupSteps />
           <CsvDropZone setCsvData={setMeetupData} setCanSubmit={() => true} />
-
-          <Button type="submit" onClick={submitJSON} disabled={!canSubmit}>
+          <Button
+            variant="outlined"
+            type="submit"
+            onClick={submitJSON}
+            disabled={!canSubmit}
+          >
             Summarize Data
           </Button>
         </form>
