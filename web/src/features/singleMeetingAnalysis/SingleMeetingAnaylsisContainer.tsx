@@ -1,15 +1,12 @@
 import React, { useState } from "react";
-import { SingleMeetupSummary } from "./SingleMeetupSummary";
 import SingleMeetingForm from "./components/SingleMeetingForm";
 import { AttendeeData } from "./SingleMeetupTypes";
-import DetailsTabs from "./components/DetailsTabs";
-import { Button } from "reactstrap";
-import { postEvent } from "../../requests/eventRequest";
+import SingleMeetingContent from "features/singleMeetingAnalysis/components/SingleMeetingContent";
 
 const SingleMeetingAnalysisContainer = () => {
   const [eventName, setEventName] = useState("");
   const [eventDate, setEventDate] = useState("");
-  const [attendees, setAttendees]: [AttendeeData[], any] = useState([]);
+  const [attendees, setAttendees]: [AttendeeData[], Function] = useState([]);
 
   return (
     <div>
@@ -23,35 +20,12 @@ const SingleMeetingAnalysisContainer = () => {
           setEventDate={setEventDate}
         />
       )}
-      {attendees.length > 0 && (
-        <React.Fragment>
-          <SingleMeetupSummary
-            attendees={attendees}
-            eventName={eventName}
-            eventDate={eventDate}
-          />
-          <Button
-            color="info"
-            onClick={() => {
-              setAttendees([]);
-            }}
-          >
-            Enter new Data
-          </Button>
-          <DetailsTabs attendees={attendees} eventDate={eventDate} />
-          <Button
-            onClick={async () => {
-              await postEvent({
-                eventName,
-                eventDate,
-                attendees
-              });
-            }}
-          >
-            Save Summary
-          </Button>
-        </React.Fragment>
-      )}
+      <SingleMeetingContent
+        eventName={eventName}
+        eventDate={eventDate}
+        attendees={attendees}
+        setAttendees={setAttendees}
+      />
     </div>
   );
 };

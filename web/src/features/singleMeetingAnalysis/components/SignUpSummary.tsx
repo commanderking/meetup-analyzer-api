@@ -7,6 +7,7 @@ import {
   getSignupsPerDay,
   getSignupsAccumulated
 } from "../SingleMeetingAnalysisUtils";
+import SignUpChartDaily from "features/singleMeetingAnalysis/components/SignUpChartDaily";
 
 const SignupViews = {
   ACCUMULATED: "ACCUMULATED",
@@ -51,7 +52,7 @@ const SignupSummary = ({
       {signupView === SignupViews.ACCUMULATED ? (
         <SignUpAreaChart data={_.values(signupDataAccumulated)} />
       ) : (
-        <SignUpAreaChart data={_.values(signupDataDaily)} />
+        <SignUpChartDaily data={_.values(signupDataDaily)} />
       )}
     </div>
   );

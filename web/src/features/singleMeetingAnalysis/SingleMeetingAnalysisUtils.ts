@@ -245,6 +245,8 @@ const createInitialSignups = (days: number, firstDate: any) => {
       daysSinceFirstSignupDay: index,
       rawDate: dateOfSignup,
       count: 0,
+      attendedCount: 0,
+      rsvpNotAttendedCount: 0,
       dayOfWeek,
       displayDate,
       attendees: []
@@ -278,11 +280,18 @@ export const getSignupsPerDay = (
       )
       .diff("days");
 
+    const { didAttend, didRSVP } = attendee;
+
     return {
       ...acc,
       [daysAfterFirstDay]: {
         ...acc[daysAfterFirstDay],
         count: acc[daysAfterFirstDay].count + 1,
+        attendedCount:
+          acc[daysAfterFirstDay].attendedCount + (didAttend ? 1 : 0),
+        rsvpNotAttendedCount:
+          acc[daysAfterFirstDay].rsvpNotAttendedCount +
+          (didRSVP && !didAttend ? 1 : 0),
         attendees: [...acc[daysAfterFirstDay].attendees, attendee]
       }
     };

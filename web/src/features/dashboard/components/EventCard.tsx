@@ -34,7 +34,7 @@ const EventCard = ({ event }: Props) => {
         `}
       >
         <h5>{name}</h5>
-        <h6>{moment(date).format("MM/DD/YY")}</h6>
+        <h6>{moment.utc(date).format("MM/DD/YY")}</h6>
       </div>
       <div
         css={css`

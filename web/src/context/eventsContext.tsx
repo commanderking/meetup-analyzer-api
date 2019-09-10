@@ -28,7 +28,7 @@ const useEventsState = () => {
 
   if (!context) {
     throw new Error(
-      "useReactionState must be used within a ReactionContext Provider"
+      "useEventsState must be used within a EventsContext Provider"
     );
   }
 
