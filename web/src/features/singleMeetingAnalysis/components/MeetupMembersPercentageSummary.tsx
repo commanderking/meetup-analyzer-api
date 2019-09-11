@@ -19,31 +19,31 @@ const MeetupMembersPercentageSummary = ({
         id="AttendeePercentagesByMeetupRegistrationDate"
         css={css`
           display: grid;
-          grid-template-columns: 2fr 3fr;
+          grid-template-columns: 2fr 1fr 3fr;
         `}
       >
         <PercentageProgressBar
-          text="Past Thirty Days"
+          text="Member for < 30 days"
           numerator={meetupMembersWhoAttended.pastThirtyDays}
           denominator={meetupMembersWhoRSVPd.pastThirtyDays}
         />
         <PercentageProgressBar
-          text="Past Six Months"
+          text="Member for < 6 months "
           numerator={meetupMembersWhoAttended.pastSixMonths}
           denominator={meetupMembersWhoRSVPd.pastSixMonths}
         />
         <PercentageProgressBar
-          text="Past Year"
+          text="Member for < 1 year"
           numerator={meetupMembersWhoAttended.pastYear}
           denominator={meetupMembersWhoRSVPd.pastYear}
         />
         <PercentageProgressBar
-          text="Past Two Years"
+          text="Member for < 2 years "
           numerator={meetupMembersWhoAttended.pastTwoYears}
           denominator={meetupMembersWhoRSVPd.pastTwoYears}
         />
         <PercentageProgressBar
-          text="More than 2 years"
+          text="Member for 2+ years"
           numerator={meetupMembersWhoAttended.overTwoYearsAgo}
           denominator={meetupMembersWhoRSVPd.overTwoYearsAgo}
         />

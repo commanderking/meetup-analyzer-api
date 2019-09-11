@@ -15,6 +15,9 @@ const PercentageProgressBar = ({ text, numerator, denominator }: Props) => {
   return (
     <React.Fragment>
       <div>{text}</div>
+      <div>
+        {numerator} / {denominator}
+      </div>
       <Progress color="info" value={percent}>
         {percent}%
       </Progress>

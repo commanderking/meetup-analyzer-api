@@ -3,33 +3,36 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { DesignColors } from "../../constants/Design";
+import Card from "@material-ui/core/Card";
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active) {
-    const {
-      dayOfWeek,
-      displayDate,
-      count,
-      attendedCount,
-      rsvpNotAttendedCount
-    } = payload[0].payload;
-    return (
-      <div
-        id="tooltip"
-        css={css`
-          background-color: red;
-          text-align: left;
-          padding: 10px;
-        `}
-        style={{ backgroundColor: "white", padding: "10px", textAlign: "left" }}
-      >
-        <div>
-          {dayOfWeek}, {displayDate}
+    const { dayOfWeek, displayDate, count, attendedCount } = payload[0].payload;
+    return count > 0 ? (
+      <Card>
+        <div
+          id="tooltip"
+          css={css`
+            background-color: red;
+            text-align: left;
+            padding: 10px;
+          `}
+          style={{
+            backgroundColor: "white",
+            padding: "10px",
+            textAlign: "left"
+          }}
+        >
+          <div>
+            {dayOfWeek}, {displayDate}
+          </div>
+          <div>
+            Attendance Rate: {attendedCount} / {count} (
+            {Math.round((attendedCount / count) * 100)}%)
+          </div>
         </div>
-        <div>Attended: {attendedCount}</div>
-        <div>RSVPed (did not attend): {rsvpNotAttendedCount}</div>
-      </div>
-    );
+      </Card>
+    ) : null;
   }
   return null;
 };

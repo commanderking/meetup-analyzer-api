@@ -41,7 +41,7 @@ const AttendanceBySignupDate = ({ attendees, eventDate }: Props) => {
         id="AttendeePercentagesByMeetupRegistrationDate"
         css={css`
           display: grid;
-          grid-template-columns: 2fr 3fr;
+          grid-template-columns: 2fr 1fr 3fr;
           margin-bottom: 50px;
         `}
       >
