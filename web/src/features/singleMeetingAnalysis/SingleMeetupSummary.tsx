@@ -4,6 +4,7 @@ import AttendanceCard from "./components/AttendanceCard";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { AttendeeData } from "./SingleMeetupTypes";
+import Typography from "@material-ui/core/Typography";
 
 type Props = {
   attendees: AttendeeData[];
@@ -27,33 +28,19 @@ export const SingleMeetupSummary = ({
     <div
       css={css`
          {
-          padding: 20px;
+          margin-left: 20px;
           margin-bottom: 20px;
+          text-align: center;
         }
       `}
     >
-      <h3>{eventName}</h3>
-      {eventDate && <h5>{eventDate}</h5>}
-      <div
-        id="SingleMeetupSummary"
-        css={css`
-          display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
-        `}
-      >
-        <AttendanceCard
-          headerText="Total Attendees"
-          bodyText={numberAttendees}
-        />
-        <AttendanceCard
-          headerText="% of RSVPs that Attended"
-          bodyText={`${Math.round((attendeesWhoRSVPd / numberRSVPs) * 100)}%`}
-          subBodyText={`${attendeesWhoRSVPd} / ${numberRSVPs}`}
-        />
-        <AttendanceCard
-          headerText="New Members"
-          bodyText={attendeesWhoJoinedMeetupForEvent}
-        />
+      <div id="SingleMeetupSummary">
+        <Typography variant="h5" gutterBottom>
+          Summary
+        </Typography>
+        <div> {numberAttendees} Attendees</div>
+        <div> {numberRSVPs} RSVPs</div>
+        <div>{attendeesWhoJoinedMeetupForEvent} New Members</div>
       </div>
     </div>
   );

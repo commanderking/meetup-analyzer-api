@@ -4,6 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { css, jsx } from "@emotion/core";
 import { DesignColors } from "../../constants/Design";
 import Card from "@material-ui/core/Card";
+import Typography from "@material-ui/core/Typography";
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active) {
@@ -44,9 +45,12 @@ const SignUpChartDaily = ({ data }: any) => {
         margin: auto;
       `}
     >
+      <Typography variant="h5" gutterBottom>
+        Daily Sign Up
+      </Typography>
       <BarChart
         width={600}
-        height={400}
+        height={250}
         data={data}
         margin={{
           top: 10,

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import _ from "lodash";
 import { useEventsState } from "../../context/eventsContext";
 import { getAttendanceForEvents } from "../../requests/attendanceRequest";
 import { SingleMeetupSummary } from "../singleMeetingAnalysis/SingleMeetupSummary";
@@ -6,6 +7,10 @@ import moment from "moment";
 import { useEventsCall } from "../../context/eventsHook";
 import DetailsTabs from "features/singleMeetingAnalysis/components/DetailsTabs";
 import AttendanceBySignupDate from "features/singleMeetingAnalysis/components/AttendanceBySignupDate";
+import Grid from "@material-ui/core/Grid";
+import SignUpChartDaily from "features/singleMeetingAnalysis/components/SignUpChartDaily";
+import { getSignupsPerDay } from "features/singleMeetingAnalysis/SingleMeetingAnalysisUtils";
+
 type Props = {
   match: any;
 };
@@ -31,13 +36,28 @@ const EventContainer = ({ match }: Props) => {
   if (!event) return <div>No event found</div>;
 
   const eventDateFormatted = moment.utc(event.date).format("MM/DD/YY");
+
+  const singupData = getSignupsPerDay(attendance, eventDateFormatted);
   return (
     <div>
-      <SingleMeetupSummary
-        attendees={attendance}
-        eventName={event.name}
-        eventDate={eventDateFormatted}
-      />
+      <h3>{event.name}</h3>
+      {eventDateFormatted && <h5>{eventDateFormatted}</h5>}
+      <Grid
+        container
+        spacing={1}
+        style={{ maxWidth: "1000px", margin: "auto" }}
+      >
+        <Grid item sm={3} xs={12}>
+          <SingleMeetupSummary
+            attendees={attendance}
+            eventName={event.name}
+            eventDate={eventDateFormatted}
+          />
+        </Grid>
+        <Grid item sm={9} xs={12}>
+          <SignUpChartDaily data={_.values(singupData)} />
+        </Grid>
+      </Grid>
       <DetailsTabs attendees={attendance} eventDate={eventDateFormatted} />
       <AttendanceBySignupDate
         attendees={attendance}
