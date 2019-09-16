@@ -8,6 +8,9 @@ import { useEventsCall } from "../../context/eventsHook";
 import DetailsTabs from "features/singleMeetingAnalysis/components/DetailsTabs";
 import AttendanceBySignupDate from "features/singleMeetingAnalysis/components/AttendanceBySignupDate";
 import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+import Card from "@material-ui/core/Card";
+
 import SignUpChartDaily from "features/singleMeetingAnalysis/components/SignUpChartDaily";
 import { getSignupsPerDay } from "features/singleMeetingAnalysis/SingleMeetingAnalysisUtils";
 
@@ -38,24 +41,30 @@ const EventContainer = ({ match }: Props) => {
   const eventDateFormatted = moment.utc(event.date).format("MM/DD/YY");
 
   const singupData = getSignupsPerDay(attendance, eventDateFormatted);
+
   return (
-    <div>
-      <h3>{event.name}</h3>
-      {eventDateFormatted && <h5>{eventDateFormatted}</h5>}
-      <Grid
-        container
-        spacing={1}
-        style={{ maxWidth: "1000px", margin: "auto" }}
-      >
+    <div style={{ maxWidth: "1280px", margin: "auto", padding: "40px" }}>
+      <div style={{ textAlign: "left", padding: "40px" }}>
+        <Typography variant="h5">{event.name}</Typography>
+        {eventDateFormatted && (
+          <Typography variant="h6">{eventDateFormatted}</Typography>
+        )}
+      </div>
+
+      <Grid container spacing={2}>
         <Grid item sm={3} xs={12}>
-          <SingleMeetupSummary
-            attendees={attendance}
-            eventName={event.name}
-            eventDate={eventDateFormatted}
-          />
+          <Card style={{ height: "100%", padding: "10px" }}>
+            <SingleMeetupSummary
+              attendees={attendance}
+              eventName={event.name}
+              eventDate={eventDateFormatted}
+            />
+          </Card>
         </Grid>
         <Grid item sm={9} xs={12}>
-          <SignUpChartDaily data={_.values(singupData)} />
+          <Card style={{ height: "100%", padding: "10px" }}>
+            <SignUpChartDaily data={_.values(singupData)} />
+          </Card>
         </Grid>
       </Grid>
       <DetailsTabs attendees={attendance} eventDate={eventDateFormatted} />

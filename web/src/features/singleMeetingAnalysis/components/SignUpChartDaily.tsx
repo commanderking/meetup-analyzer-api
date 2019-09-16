@@ -1,5 +1,13 @@
 import React from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Label
+} from "recharts";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { DesignColors } from "../../constants/Design";
@@ -9,7 +17,7 @@ import Typography from "@material-ui/core/Typography";
 const CustomTooltip = ({ active, payload }: any) => {
   if (active) {
     const { dayOfWeek, displayDate, count, attendedCount } = payload[0].payload;
-    return count > 0 ? (
+    return (
       <Card>
         <div
           id="tooltip"
@@ -24,16 +32,22 @@ const CustomTooltip = ({ active, payload }: any) => {
             textAlign: "left"
           }}
         >
-          <div>
-            {dayOfWeek}, {displayDate}
-          </div>
-          <div>
-            Attendance Rate: {attendedCount} / {count} (
-            {Math.round((attendedCount / count) * 100)}%)
-          </div>
+          {count > 0 ? (
+            <div>
+              <div>
+                {dayOfWeek}, {displayDate}
+              </div>
+              <div>
+                Attendance Rate: {attendedCount} / {count} (
+                {Math.round((attendedCount / count) * 100)}%)
+              </div>
+            </div>
+          ) : (
+            <div>No RSVPs</div>
+          )}
         </div>
       </Card>
-    ) : null;
+    );
   }
   return null;
 };
@@ -46,10 +60,10 @@ const SignUpChartDaily = ({ data }: any) => {
       `}
     >
       <Typography variant="h5" gutterBottom>
-        Daily Sign Up
+        Daily RSVPs
       </Typography>
       <BarChart
-        width={600}
+        width={800}
         height={250}
         data={data}
         margin={{
@@ -63,8 +77,9 @@ const SignUpChartDaily = ({ data }: any) => {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="displayDate" />
-        <YAxis />
+        <XAxis dataKey="displayDate" tickCount={5}></XAxis>
+        <YAxis label={{ value: "RSVPs", angle: -90, position: "insideLeft" }} />
+
         <Tooltip
           content={<CustomTooltip />}
           cursor={{ stroke: "red", strokeWidth: 2, color: "white" }}
