@@ -5,18 +5,12 @@ import AttendanceCard from "./components/AttendanceCard";
 import { css, jsx } from "@emotion/core";
 import { AttendeeData } from "./SingleMeetupTypes";
 import Typography from "@material-ui/core/Typography";
-
+import AttendanceRatePieChart from "features/singleMeetingAnalysis/components/AttendanceRatePieChart";
 type Props = {
   attendees: AttendeeData[];
-  eventName: string;
-  eventDate: string;
 };
 
-export const SingleMeetupSummary = ({
-  attendees,
-  eventName,
-  eventDate
-}: Props) => {
+export const SingleMeetupSummary = ({ attendees }: Props) => {
   const summary = getSummaryData(attendees);
   const {
     numberRSVPs,
@@ -24,6 +18,8 @@ export const SingleMeetupSummary = ({
     attendeesWhoRSVPd,
     attendeesWhoJoinedMeetupForEvent
   } = summary;
+
+  const rsvpsWhoDidNotAttend = numberRSVPs - attendeesWhoRSVPd;
   return (
     <div
       css={css`
@@ -38,6 +34,10 @@ export const SingleMeetupSummary = ({
         <Typography variant="h5" gutterBottom>
           Summary
         </Typography>
+        <AttendanceRatePieChart
+          attendeesWhoRSVPd={attendeesWhoRSVPd}
+          rsvpsWhoDidNotAttend={rsvpsWhoDidNotAttend}
+        />
         <div> {numberAttendees} Attendees</div>
         <div> {numberRSVPs} RSVPs</div>
         <div>{attendeesWhoJoinedMeetupForEvent} New Members</div>

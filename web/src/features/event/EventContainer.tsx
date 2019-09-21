@@ -54,11 +54,7 @@ const EventContainer = ({ match }: Props) => {
       <Grid container spacing={2}>
         <Grid item sm={3} xs={12}>
           <Card style={{ height: "100%", padding: "10px" }}>
-            <SingleMeetupSummary
-              attendees={attendance}
-              eventName={event.name}
-              eventDate={eventDateFormatted}
-            />
+            <SingleMeetupSummary attendees={attendance} />
           </Card>
         </Grid>
         <Grid item sm={9} xs={12}>

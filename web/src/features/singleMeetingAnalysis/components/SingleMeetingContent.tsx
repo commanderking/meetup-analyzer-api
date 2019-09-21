@@ -22,11 +22,7 @@ const SingleMeetingContent = ({
     <div>
       {attendees.length > 0 && (
         <React.Fragment>
-          <SingleMeetupSummary
-            attendees={attendees}
-            eventName={eventName}
-            eventDate={eventDate}
-          />
+          <SingleMeetupSummary attendees={attendees} />
           <Button
             variant="outlined"
             color="primary"
