@@ -2,21 +2,10 @@ import React, { useEffect, useState } from "react";
 import _ from "lodash";
 import { useEventsState } from "../../context/eventsContext";
 import { getAttendanceForEvents } from "../../requests/attendanceRequest";
-import { SingleMeetupSummary } from "../singleMeetingAnalysis/SingleMeetupSummary";
 import moment from "moment";
 import { useEventsCall } from "../../context/eventsHook";
-import DetailsTabs from "features/singleMeetingAnalysis/components/DetailsTabs";
-import AttendanceBySignupDate from "features/singleMeetingAnalysis/components/AttendanceBySignupDate";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import Card from "@material-ui/core/Card";
+import SingleMeetingContent from "features/singleMeetingAnalysis/components/SingleMeetingContent";
 
-import SignUpChartDaily from "features/singleMeetingAnalysis/components/SignUpChartDaily";
-import {
-  getSignupsPerDay,
-  getMeetupAttendanceByTenureTableData
-} from "features/singleMeetingAnalysis/SingleMeetingAnalysisUtils";
-import MemberTenureAttendanceTable from "features/singleMeetingAnalysis/components/MemberTenureAttendanceTable";
 type Props = {
   match: any;
 };
@@ -43,43 +32,12 @@ const EventContainer = ({ match }: Props) => {
 
   const eventDateFormatted = moment.utc(event.date).format("MM/DD/YY");
 
-  const singupData = getSignupsPerDay(attendance, eventDateFormatted);
-  const tenureTableData = getMeetupAttendanceByTenureTableData(
-    attendance,
-    eventDateFormatted
-  );
   return (
-    <div style={{ maxWidth: "1280px", margin: "auto", padding: "40px" }}>
-      <div style={{ textAlign: "left", padding: "40px" }}>
-        <Typography variant="h5">{event.name}</Typography>
-        {eventDateFormatted && (
-          <Typography variant="h6">{eventDateFormatted}</Typography>
-        )}
-      </div>
-
-      <Grid container spacing={2}>
-        <Grid item md={3} sm={6} xs={12}>
-          <Card style={{ height: "100%", padding: "10px" }}>
-            <SingleMeetupSummary attendees={attendance} />
-          </Card>
-        </Grid>
-        <Grid item md={9} sm={12} xs={12}>
-          <Card style={{ height: "100%", padding: "10px", overflow: "scroll" }}>
-            <SignUpChartDaily data={_.values(singupData)} />
-          </Card>
-        </Grid>
-        <Grid item md={12}>
-          <Card>
-            <MemberTenureAttendanceTable tenureTableData={tenureTableData} />
-          </Card>
-        </Grid>
-      </Grid>
-      <DetailsTabs attendees={attendance} eventDate={eventDateFormatted} />
-      <AttendanceBySignupDate
-        attendees={attendance}
-        eventDate={eventDateFormatted}
-      />
-    </div>
+    <SingleMeetingContent
+      attendees={attendance}
+      eventDate={eventDateFormatted}
+      eventName={event.name}
+    />
   );
 };
 

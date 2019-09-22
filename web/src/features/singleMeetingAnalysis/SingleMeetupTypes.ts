@@ -42,3 +42,24 @@ export type AttendanceRateBySignupDate = {
 export type AttendanceBySignupDateForTable = AttendeeCountsForDate & {
   percent: number;
 };
+
+export type MembershipLengthTableRow = {
+  name: string;
+  attendees: number;
+  rsvps: number;
+  rsvpPercent: number | null;
+};
+
+export type SignupPeriodTableRow = {
+  name: string;
+  attendees: number | null;
+  rsvps: number | null;
+  rsvpPercent: number | null;
+};
+
+export type MembershipLengths =
+  | "pastThirtyDays"
+  | "pastSixMonths"
+  | "pastYear"
+  | "pastTwoYears"
+  | "overTwoYearsAgo";

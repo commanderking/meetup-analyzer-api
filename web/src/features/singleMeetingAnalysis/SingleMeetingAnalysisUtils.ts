@@ -8,7 +8,10 @@ import {
   RelativeMeetupRegistrationDates,
   AttendeeCountsForDate,
   AttendanceRateBySignupDate,
-  AttendanceBySignupDateForTable
+  AttendanceBySignupDateForTable,
+  MembershipLengthTableRow,
+  SignupPeriodTableRow,
+  MembershipLengths
 } from "./SingleMeetupTypes";
 
 // @ts-ignore
@@ -28,6 +31,7 @@ export const bindRawMeetupData = (
 ): AttendeeData[] => {
   return meetupData.map((user: RawAttendeeData) => {
     return {
+      // A bit dangerous if someone actually explicitly put "user " into their name - rethink down the line
       userId:
         user["User ID"] !== "" ? user["User ID"].replace("user ", "") : null,
       didAttend: attendedMeetup(user),
@@ -165,7 +169,7 @@ export const getMeetupMembersWhoAttendedSummary = (
     );
 };
 
-export const getMeetupMembersWhoRSVPd = (
+const getMeetupMembersWhoRSVPd = (
   attendees: AttendeeData[],
   eventDate: string
 ): RelativeMeetupRegistrationDates => {
@@ -192,17 +196,13 @@ const getPercent = (num: number, den: number): number | null => {
   return Math.round((num / den) * 100);
 };
 
-type MembershipLengths =
-  | "pastThirtyDays"
-  | "pastSixMonths"
-  | "pastYear"
-  | "pastTwoYears"
-  | "overTwoYearsAgo";
-
-const getMembershipTenureTableDataRowCreator = (
+const getMembershipLengthTableRowCreator = (
   attendedCounts: RelativeMeetupRegistrationDates,
   rsvpCounts: RelativeMeetupRegistrationDates
-) => (membershipLength: MembershipLengths, labelName: string) => {
+) => (
+  membershipLength: MembershipLengths,
+  labelName: string
+): MembershipLengthTableRow => {
   return {
     name: labelName,
     attendees: attendedCounts[membershipLength],
@@ -214,17 +214,17 @@ const getMembershipTenureTableDataRowCreator = (
   };
 };
 
-export const getMeetupAttendanceByTenureTableData = (
+export const getAttendanceByMembershipLengthTableData = (
   attendees: AttendeeData[],
   eventDate: string
-) => {
+): MembershipLengthTableRow[] => {
   const rsvpCounts = getMeetupMembersWhoRSVPd(attendees, eventDate);
   const attendedCounts = getMeetupMembersWhoAttendedSummary(
     attendees,
     eventDate
   );
 
-  const getTableRow = getMembershipTenureTableDataRowCreator(
+  const getTableRow = getMembershipLengthTableRowCreator(
     attendedCounts,
     rsvpCounts
   );
@@ -352,6 +352,8 @@ export const getSignupsPerDay = (
   }, initialSignups);
 };
 
+// TODO: We could use this to calculate the accumulated signpus per day
+// Might be useful down the line?
 export const getSignupsAccumulated = (
   attendees: AttendeeData[],
   eventDate: string
@@ -376,7 +378,7 @@ export const getSignupsAccumulated = (
   return accumulatedSignUpsPerDay;
 };
 
-export const getAttendanceRateBySignupDate = (
+const getAttendanceRateBySignupDate = (
   attendees: AttendeeData[],
   eventDate: string
 ): AttendanceRateBySignupDate => {
@@ -424,7 +426,7 @@ const sumAttendanceRates = (
   attended: attendance.attended + value.attended
 });
 
-export const getFirstWeekSignups = (
+const getFirstWeekSignups = (
   attendanceRateBySignupDate: AttendanceRateBySignupDate
 ) => {
   if (_.size(attendanceRateBySignupDate) < 7) {
@@ -445,7 +447,7 @@ export const getFirstWeekSignups = (
   });
 };
 
-export const getLastWeekSignups = (
+const getLastWeekSignups = (
   attendanceRateBySignupDate: AttendanceRateBySignupDate
 ) => {
   const totalDays = _.size(attendanceRateBySignupDate);
@@ -455,7 +457,7 @@ export const getLastWeekSignups = (
 
   const lastDay = totalDays - 1;
 
-  const firstWeekAttendanceRate = _.filter(
+  const lastWeekAttendanceRate = _.filter(
     attendanceRateBySignupDate,
     (value, key) => {
       const daysAfterFirstDay = parseInt(key);
@@ -463,12 +465,43 @@ export const getLastWeekSignups = (
     }
   );
   // @ts-ignore
-  return _.reduce(firstWeekAttendanceRate, sumAttendanceRates, {
+  return _.reduce(lastWeekAttendanceRate, sumAttendanceRates, {
     rsvped: 0,
     attended: 0
   });
 };
 
+const getAttendeeBreakdownForTimePeriod = (
+  periodName: string,
+  periodCounts: AttendeeCountsForDate | null
+): SignupPeriodTableRow => {
+  const attendees = (periodCounts && periodCounts.attended) || null;
+  const rsvps = (periodCounts && periodCounts.rsvped) || null;
+
+  return {
+    name: periodName,
+    attendees,
+    rsvps,
+    rsvpPercent: (attendees && rsvps && getPercent(attendees, rsvps)) || null
+  };
+};
+
+export const getAttendanceBySignupPeriodTableData = (
+  attendees: AttendeeData[],
+  eventDate: string
+): SignupPeriodTableRow[] => {
+  const rateByDate = getAttendanceRateBySignupDate(attendees, eventDate);
+  const firstWeek = getFirstWeekSignups(rateByDate);
+  const lastWeek = getLastWeekSignups(rateByDate);
+
+  return [
+    getAttendeeBreakdownForTimePeriod("First Week", firstWeek),
+    getAttendeeBreakdownForTimePeriod("Last Week", lastWeek)
+  ];
+};
+
+// Highlights the dates with RSVPS > 5 and returns data
+// Was a remnant of an old calculation, but may be useful in the future
 export const getAttendeesBySignupDateTable = (
   attendanceRateBySignupDate: AttendanceRateBySignupDate
 ): AttendanceBySignupDateForTable[] => {

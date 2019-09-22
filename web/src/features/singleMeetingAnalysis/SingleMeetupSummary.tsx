@@ -1,6 +1,5 @@
 import React from "react";
 import { getSummaryData } from "./SingleMeetingAnalysisUtils";
-import AttendanceCard from "./components/AttendanceCard";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { AttendeeData } from "./SingleMeetupTypes";

@@ -1,9 +1,10 @@
 import React from "react";
 import MUIDataTable from "mui-datatables";
-import { Progress } from "reactstrap";
-import { DesignColors } from "features/constants/Design";
+import { MembershipLengthTableRow } from "features/singleMeetingAnalysis/SingleMeetupTypes";
+import AttendancePercentProgressBar from "features/singleMeetingAnalysis/components/AttendancePercentProgressBar";
+
 type Props = {
-  tenureTableData: any; // TODO: Update
+  tenureTableData: MembershipLengthTableRow[];
 };
 
 const columns = [
@@ -14,20 +15,9 @@ const columns = [
     name: "rsvpPercent",
     label: "Attendance %",
     options: {
-      customBodyRender: (value: number) => {
-        if (!value) {
-          return <Progress color="info" value={0} />;
-        }
-        return (
-          <Progress color="info" value={value}>
-            <span
-              style={{ color: "black", backgroundColor: DesignColors.THEME_1 }}
-            >
-              {value}%
-            </span>
-          </Progress>
-        );
-      }
+      customBodyRender: (attendancePercent: number) => (
+        <AttendancePercentProgressBar attendancePercent={attendancePercent} />
+      )
     }
   }
 ];
@@ -38,7 +28,7 @@ const MemberTenureAttendanceTable = ({ tenureTableData }: Props) => {
       <MUIDataTable
         columns={columns}
         data={tenureTableData}
-        title="Attendance by Membership Length"
+        title="Attendance by Signup Period"
         options={{
           pagination: false,
           filter: false,

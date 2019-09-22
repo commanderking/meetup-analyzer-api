@@ -42,7 +42,7 @@ const AttendanceRatePieChart = ({ attendeesWhoRSVPd, numberRSVPs }: Props) => {
         dy={8}
         textAnchor="middle"
         fill={"#8884d8"}
-        font-size="2em"
+        fontSize="2em"
       >
         {`${attendancePercent}%`}
       </text>
