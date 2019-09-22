@@ -58,17 +58,17 @@ const EventContainer = ({ match }: Props) => {
       </div>
 
       <Grid container spacing={2}>
-        <Grid item sm={3} xs={12}>
+        <Grid item md={3} sm={6} xs={12}>
           <Card style={{ height: "100%", padding: "10px" }}>
             <SingleMeetupSummary attendees={attendance} />
           </Card>
         </Grid>
-        <Grid item sm={9} xs={12}>
-          <Card style={{ height: "100%", padding: "10px" }}>
+        <Grid item md={9} sm={12} xs={12}>
+          <Card style={{ height: "100%", padding: "10px", overflow: "scroll" }}>
             <SignUpChartDaily data={_.values(singupData)} />
           </Card>
         </Grid>
-        <Grid item sm={6} xs={12}>
+        <Grid item md={12}>
           <Card>
             <MemberTenureAttendanceTable tenureTableData={tenureTableData} />
           </Card>

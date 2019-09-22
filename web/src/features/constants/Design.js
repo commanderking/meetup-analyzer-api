@@ -1,5 +1,5 @@
 export const DesignColors = {
-  THEME_1: "#17a2b8", // turqoise
-  SIGNUP_DAILY_ATTENDED: "green",
+  THEME_1: "#8884D8", // light purple
+  SIGNUP_DAILY_ATTENDED: "#8884D8",
   SIGNUP_DAILY_DID_NOT_ATTEND: "#BCBEC0"
 };

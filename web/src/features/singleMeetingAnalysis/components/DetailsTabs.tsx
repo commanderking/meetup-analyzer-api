@@ -5,7 +5,6 @@ import { css, jsx } from "@emotion/core";
 import SignupSummary from "./SignUpSummary";
 import { AttendeeData } from "../SingleMeetupTypes";
 import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
-import MeetupMembersSummary from "./MeetupMembersSummary";
 type Props = {
   attendees: AttendeeData[];
   eventDate: string;
@@ -51,9 +50,6 @@ const DetailsTab = ({ attendees, eventDate }: Props) => {
       <TabContent activeTab={activeTab}>
         <TabPane tabId={`${Tabs.MEETUP_SIGNUP}`}>
           <SignupSummary attendees={attendees} eventDate={eventDate} />
-        </TabPane>
-        <TabPane tabId={`${Tabs.ATTENDEE_HISTORY}`}>
-          <MeetupMembersSummary eventDate={eventDate} attendees={attendees} />
         </TabPane>
       </TabContent>
     </div>

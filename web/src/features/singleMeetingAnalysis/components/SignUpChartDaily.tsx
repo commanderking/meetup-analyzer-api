@@ -78,7 +78,14 @@ const SignUpChartDaily = ({ data }: any) => {
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="displayDate" tickCount={5}></XAxis>
-        <YAxis label={{ value: "RSVPs", angle: -90, position: "insideLeft" }} />
+        <YAxis
+          label={{
+            value: "RSVPs",
+            angle: -90,
+            position: "insideLeft",
+            offset: 10
+          }}
+        />
 
         <Tooltip
           content={<CustomTooltip />}

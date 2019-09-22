@@ -184,12 +184,12 @@ export const getMeetupMembersWhoRSVPd = (
     );
 };
 
-const getPercent = (num: number, den: number): string => {
+const getPercent = (num: number, den: number): number | null => {
   if (!den) {
-    return "N/A";
+    return null;
   }
 
-  return `${Math.round((num / den) * 100)}%`;
+  return Math.round((num / den) * 100);
 };
 
 type MembershipLengths =
