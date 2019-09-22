@@ -184,6 +184,60 @@ export const getMeetupMembersWhoRSVPd = (
     );
 };
 
+const getPercent = (num: number, den: number): string => {
+  if (!den) {
+    return "N/A";
+  }
+
+  return `${Math.round((num / den) * 100)}%`;
+};
+
+type MembershipLengths =
+  | "pastThirtyDays"
+  | "pastSixMonths"
+  | "pastYear"
+  | "pastTwoYears"
+  | "overTwoYearsAgo";
+
+const getMembershipTenureTableDataRowCreator = (
+  attendedCounts: RelativeMeetupRegistrationDates,
+  rsvpCounts: RelativeMeetupRegistrationDates
+) => (membershipLength: MembershipLengths, labelName: string) => {
+  return {
+    name: labelName,
+    attendees: attendedCounts[membershipLength],
+    rsvps: rsvpCounts[membershipLength],
+    rsvpPercent: getPercent(
+      attendedCounts[membershipLength],
+      rsvpCounts[membershipLength]
+    )
+  };
+};
+
+export const getMeetupAttendanceByTenureTableData = (
+  attendees: AttendeeData[],
+  eventDate: string
+) => {
+  const rsvpCounts = getMeetupMembersWhoRSVPd(attendees, eventDate);
+  const attendedCounts = getMeetupMembersWhoAttendedSummary(
+    attendees,
+    eventDate
+  );
+
+  const getTableRow = getMembershipTenureTableDataRowCreator(
+    attendedCounts,
+    rsvpCounts
+  );
+
+  return [
+    getTableRow("pastThirtyDays", "< 1 month"),
+    getTableRow("pastSixMonths", "1 - 6 months"),
+    getTableRow("pastYear", "6 - 12 months"),
+    getTableRow("pastTwoYears", "12 -24 months"),
+    getTableRow("overTwoYearsAgo", "24+ months")
+  ];
+};
+
 export const getSummaryData = (attendees: AttendeeData[]) => {
   return attendees.reduce(
     (acc, currentAttendee) => {

@@ -54,6 +54,7 @@ const CsvDropZone = ({ setCanSubmit, setCsvData }: Props) => {
             <div>Uploaded file: {acceptedFiles[0].name}</div>
           </div>
         ) : (
+          // @ts-ignore
           <div
             css={css`
                {
@@ -82,6 +83,8 @@ const CsvDropZone = ({ setCanSubmit, setCsvData }: Props) => {
               // which is why we're omitting "refKey" here. Not needed except in
               // certain circumstances
             }
+            {/* 
+            // @ts-ignore */}
             <input {..._.omit(getInputProps(), "refKey")} />
             <p>Drop a csv file here or click to upload file</p>
           </div>

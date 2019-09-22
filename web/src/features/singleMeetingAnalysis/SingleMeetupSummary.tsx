@@ -19,7 +19,6 @@ export const SingleMeetupSummary = ({ attendees }: Props) => {
     attendeesWhoJoinedMeetupForEvent
   } = summary;
 
-  const rsvpsWhoDidNotAttend = numberRSVPs - attendeesWhoRSVPd;
   return (
     <div
       css={css`
@@ -36,7 +35,7 @@ export const SingleMeetupSummary = ({ attendees }: Props) => {
         </Typography>
         <AttendanceRatePieChart
           attendeesWhoRSVPd={attendeesWhoRSVPd}
-          rsvpsWhoDidNotAttend={rsvpsWhoDidNotAttend}
+          numberRSVPs={numberRSVPs}
         />
         <div> {numberAttendees} Attendees</div>
         <div> {numberRSVPs} RSVPs</div>

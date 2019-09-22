@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell } from "recharts";
 
 type Props = {
   attendeesWhoRSVPd: number;
-  rsvpsWhoDidNotAttend: number;
+  numberRSVPs: number;
 };
 
 type DataEntry = {
@@ -11,14 +11,15 @@ type DataEntry = {
   color: string;
 };
 
-const AttendanceRatePieChart = ({
-  attendeesWhoRSVPd,
-  rsvpsWhoDidNotAttend
-}: Props) => {
+const AttendanceRatePieChart = ({ attendeesWhoRSVPd, numberRSVPs }: Props) => {
+  const rsvpsWhoDidNotAttend = numberRSVPs - attendeesWhoRSVPd;
+
   const data = [
     { value: attendeesWhoRSVPd, color: "#8884d8" },
     { value: rsvpsWhoDidNotAttend, color: "#BCBEC0" }
   ];
+
+  const attendancePercent = Math.round((attendeesWhoRSVPd / numberRSVPs) * 100);
   return (
     <PieChart width={165} height={165} style={{ margin: "auto" }}>
       <Pie
@@ -43,7 +44,7 @@ const AttendanceRatePieChart = ({
         fill={"#8884d8"}
         font-size="2em"
       >
-        44%
+        {`${attendancePercent}%`}
       </text>
     </PieChart>
   );
