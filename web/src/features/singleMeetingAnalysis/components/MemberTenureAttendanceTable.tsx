@@ -1,6 +1,6 @@
 import React from "react";
 import MUIDataTable from "mui-datatables";
-import { MembershipLengthTableRow } from "features/singleMeetingAnalysis/SingleMeetupTypes";
+import { MembershipLengthTableRow } from "features/singleMeetingAnalysis/SingleMeetingAnalysisTypes";
 import AttendancePercentProgressBar from "features/singleMeetingAnalysis/components/AttendancePercentProgressBar";
 
 type Props = {

@@ -1,6 +1,7 @@
 /** @jsx jsx */
+import React, { Dispatch, SetStateAction } from "react";
 import { css, jsx } from "@emotion/core";
-import { useState } from "react";
+import { useState, ChangeEvent, MouseEvent } from "react";
 import csv from "csvtojson";
 import { bindRawMeetupData } from "../SingleMeetingAnalysisUtils";
 // import { Button, Label, FormGroup, Input, Form, Col } from "reactstrap";
@@ -8,6 +9,14 @@ import { Button, FormControl, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import CsvDropZone from "common/components/CsvDropZone";
 import CsvSetupSteps from "features/singleMeetingAnalysis/components/CsvSetupSteps";
+import { AttendeeData } from "features/singleMeetingAnalysis/SingleMeetingAnalysisTypes";
+type Props = {
+  setAttendees: Dispatch<SetStateAction<AttendeeData[]>>;
+  setEventDate: Dispatch<SetStateAction<string>>;
+  setEventName: Dispatch<SetStateAction<string>>;
+  eventDate: string;
+  eventName: string;
+};
 
 const useStyles = makeStyles({
   formControl: {
@@ -15,26 +24,25 @@ const useStyles = makeStyles({
   }
 });
 
-// TODO: Update types here
 const SingleMeetingForm = ({
   setAttendees,
   eventDate,
   setEventDate,
   eventName,
   setEventName
-}: any) => {
+}: Props) => {
   const classes = useStyles();
   const [rawMeetupData, setMeetupData] = useState("");
 
-  const handleEventDateChange = (event: any) => {
+  const handleEventDateChange = (event: ChangeEvent<HTMLInputElement>) => {
     setEventDate(event.target.value);
   };
 
-  const handleEventNameChange = (event: any) => {
+  const handleEventNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setEventName(event.target.value);
   };
 
-  const submitJSON = (event: any) => {
+  const submitJSON = (event: MouseEvent) => {
     event.preventDefault();
     csv()
       .fromString(rawMeetupData)

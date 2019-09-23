@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Label
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { DesignColors } from "../../constants/Design";

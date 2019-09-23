@@ -2,7 +2,7 @@ import React from "react";
 import { getSummaryData } from "./SingleMeetingAnalysisUtils";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-import { AttendeeData } from "./SingleMeetupTypes";
+import { AttendeeData } from "./SingleMeetingAnalysisTypes";
 import Typography from "@material-ui/core/Typography";
 import AttendanceRatePieChart from "features/singleMeetingAnalysis/components/AttendanceRatePieChart";
 type Props = {

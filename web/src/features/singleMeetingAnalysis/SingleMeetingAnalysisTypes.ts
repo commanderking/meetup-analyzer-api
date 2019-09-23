@@ -22,6 +22,17 @@ export type AttendeeData = {
   dateJoinedGroup: Date | null;
 };
 
+export type DailyAttendance = {
+  daysSinceFirstSignupDay: number;
+  rawDate: any; // TODO_TYPES: Date doesn't work, should be a specific moment type?
+  count: number;
+  attendedCount: number;
+  rsvpNotAttendedCount: number;
+  dayOfWeek: string;
+  displayDate: string;
+  attendees: AttendeeData[];
+};
+
 export type RelativeMeetupRegistrationDates = {
   pastThirtyDays: number;
   pastSixMonths: number;

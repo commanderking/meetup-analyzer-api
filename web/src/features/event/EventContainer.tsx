@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import _ from "lodash";
 import { useEventsState } from "../../context/eventsContext";
 import { getAttendanceForEvents } from "../../requests/attendanceRequest";
 import moment from "moment";
 import { useEventsCall } from "../../context/eventsHook";
 import SingleMeetingContent from "features/singleMeetingAnalysis/components/SingleMeetingContent";
+import { RouteComponentProps } from "react-router-dom";
 
-type Props = {
-  match: any;
+type MatchParams = {
+  id: string;
 };
+
+interface Props extends RouteComponentProps<MatchParams> {}
 
 const getAttendance = async (eventId: number, setAttendance: any) => {
   const attendance = await getAttendanceForEvents([eventId]);

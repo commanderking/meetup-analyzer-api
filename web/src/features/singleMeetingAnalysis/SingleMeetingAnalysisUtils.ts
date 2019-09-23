@@ -11,8 +11,9 @@ import {
   AttendanceBySignupDateForTable,
   MembershipLengthTableRow,
   SignupPeriodTableRow,
-  MembershipLengths
-} from "./SingleMeetupTypes";
+  MembershipLengths,
+  DailyAttendance
+} from "./SingleMeetingAnalysisTypes";
 
 // @ts-ignore
 const moment = extendMoment(Moment);
@@ -287,8 +288,8 @@ const weekdayNumberToTextMap: any = {
   6: "Sat"
 };
 
-const createInitialSignups = (days: number, firstDate: any) => {
-  let initialSignups: any = {};
+const createInitialSignups = (days: number, firstDate: string) => {
+  let initialSignups: { [index: string]: DailyAttendance } = {};
   _.times(days + 1, index => {
     const dateOfSignup = moment(firstDate).add(index, "days");
     const dayOfWeek = weekdayNumberToTextMap[dateOfSignup.day()];
@@ -310,10 +311,10 @@ const createInitialSignups = (days: number, firstDate: any) => {
   return initialSignups;
 };
 
-export const getSignupsPerDay = (
+export const getDailyAttendance = (
   attendees: AttendeeData[],
   eventDate: string
-) => {
+): { [daysAfterFirstDay: string]: DailyAttendance } => {
   const firstDate = getFirstDateAttendeeSignedUp(attendees);
   const difference = moment()
     .range(firstDate.startOf("day"), moment(eventDate).startOf("day"))
@@ -323,33 +324,39 @@ export const getSignupsPerDay = (
 
   const initialSignups = createInitialSignups(difference, firstDate);
 
-  return attendeesWhoRSVPd.reduce((acc: any, attendee: AttendeeData) => {
-    const signupDate =
-      (attendee.rsvpDate && moment(attendee.rsvpDate)) || moment(eventDate);
+  return attendeesWhoRSVPd.reduce(
+    (
+      acc: { [daysAfterFirstDay: string]: DailyAttendance },
+      attendee: AttendeeData
+    ) => {
+      const signupDate =
+        (attendee.rsvpDate && moment(attendee.rsvpDate)) || moment(eventDate);
 
-    const daysAfterFirstDay = moment()
-      .range(
-        moment(firstDate).startOf("day"),
-        moment(signupDate).startOf("day")
-      )
-      .diff("days");
+      const daysAfterFirstDay = moment()
+        .range(
+          moment(firstDate).startOf("day"),
+          moment(signupDate).startOf("day")
+        )
+        .diff("days");
 
-    const { didAttend, didRSVP } = attendee;
+      const { didAttend, didRSVP } = attendee;
 
-    return {
-      ...acc,
-      [daysAfterFirstDay]: {
-        ...acc[daysAfterFirstDay],
-        count: acc[daysAfterFirstDay].count + 1,
-        attendedCount:
-          acc[daysAfterFirstDay].attendedCount + (didAttend ? 1 : 0),
-        rsvpNotAttendedCount:
-          acc[daysAfterFirstDay].rsvpNotAttendedCount +
-          (didRSVP && !didAttend ? 1 : 0),
-        attendees: [...acc[daysAfterFirstDay].attendees, attendee]
-      }
-    };
-  }, initialSignups);
+      return {
+        ...acc,
+        [daysAfterFirstDay]: {
+          ...acc[daysAfterFirstDay],
+          count: acc[daysAfterFirstDay].count + 1,
+          attendedCount:
+            acc[daysAfterFirstDay].attendedCount + (didAttend ? 1 : 0),
+          rsvpNotAttendedCount:
+            acc[daysAfterFirstDay].rsvpNotAttendedCount +
+            (didRSVP && !didAttend ? 1 : 0),
+          attendees: [...acc[daysAfterFirstDay].attendees, attendee]
+        }
+      };
+    },
+    initialSignups
+  );
 };
 
 // TODO: We could use this to calculate the accumulated signpus per day
@@ -358,7 +365,7 @@ export const getSignupsAccumulated = (
   attendees: AttendeeData[],
   eventDate: string
 ) => {
-  const signupsPerDay = getSignupsPerDay(attendees, eventDate);
+  const signupsPerDay = getDailyAttendance(attendees, eventDate);
 
   const signupsAfterFirstDay = _.omit(signupsPerDay, "0");
   const accumulatedSignUpsPerDay = _.reduce(
@@ -382,7 +389,7 @@ const getAttendanceRateBySignupDate = (
   attendees: AttendeeData[],
   eventDate: string
 ): AttendanceRateBySignupDate => {
-  const signupsPerDay = getSignupsPerDay(attendees, eventDate);
+  const signupsPerDay = getDailyAttendance(attendees, eventDate);
 
   return _.reduce(
     signupsPerDay,

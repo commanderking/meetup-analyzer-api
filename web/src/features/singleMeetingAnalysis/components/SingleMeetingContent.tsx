@@ -9,15 +9,17 @@ import SignUpChartDaily from "features/singleMeetingAnalysis/components/SignUpCh
 import MemberTenureAttendanceTable from "features/singleMeetingAnalysis/components/MemberTenureAttendanceTable";
 import AttendanceBySignupDateTable from "features/singleMeetingAnalysis/components/AttendanceBySignupDateTable";
 import {
-  getSignupsPerDay,
+  getDailyAttendance,
   getAttendanceByMembershipLengthTableData,
   getAttendanceBySignupPeriodTableData
 } from "features/singleMeetingAnalysis/SingleMeetingAnalysisUtils";
+import { AttendeeData } from "features/singleMeetingAnalysis/SingleMeetingAnalysisTypes";
+
 type ContentProps = {
   setAttendees?: Function;
   eventName: string;
   eventDate: string;
-  attendees: any[]; // TODO: Update with attendees type
+  attendees: AttendeeData[];
 };
 
 const SingleMeetingContent = ({
@@ -26,7 +28,7 @@ const SingleMeetingContent = ({
   eventDate,
   attendees
 }: ContentProps) => {
-  const singupData = getSignupsPerDay(attendees, eventDate);
+  const singupData = getDailyAttendance(attendees, eventDate);
   const tenureTableData = getAttendanceByMembershipLengthTableData(
     attendees,
     eventDate

@@ -1,6 +1,11 @@
 import React from "react";
 import MUIDataTable from "mui-datatables";
 import AttendancePercentProgressBar from "features/singleMeetingAnalysis/components/AttendancePercentProgressBar";
+import { SignupPeriodTableRow } from "features/singleMeetingAnalysis/SingleMeetingAnalysisTypes";
+
+type Props = {
+  data: SignupPeriodTableRow[];
+};
 
 const columns = [
   { name: "name", label: "Signup Period", options: { sort: false } },
@@ -17,7 +22,7 @@ const columns = [
   }
 ];
 
-const AttendanceBySignupDateTable = ({ data }: any) => {
+const AttendanceBySignupDateTable = ({ data }: Props) => {
   return (
     <MUIDataTable
       columns={columns}
