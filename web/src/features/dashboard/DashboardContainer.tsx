@@ -12,33 +12,12 @@ import Button from "@material-ui/core/Button";
 import { Link } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 
-const login = async (authenticationToken: string) => {
-  await fetch("http://localhost:5000/login", {
-    method: "GET",
-    // mode: "no-cors",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Bearer ${authenticationToken}`
-    }
-  });
-};
-
 const loadMeetupSummaryData = async (setSummaryData: any) => {
   const data = await getMeetupSummaryData();
   setSummaryData(data);
 };
 
-const DashboardContainer = ({ auth }: any) => {
-  useEffect(() => {
-    // console.log("auth", auth);
-    // console.log("auth", auth.getAccessToken());
-    // console.log("auth", auth.getIdToken());
-    // console.log("auth", auth.isAuthenticated());
-    if (auth && auth.getAccessToken()) {
-      login(auth.getIdToken());
-    }
-  }, [auth]);
-
+const DashboardContainer = () => {
   const { isLoading, events } = useEventsCall();
 
   const [summaryData, setSummaryData]: [
@@ -62,8 +41,6 @@ const DashboardContainer = ({ auth }: any) => {
   } = currentYear;
   return (
     <div>
-      {/* <LoginContainer auth={auth} /> */}
-
       <div
         css={css`
            {
