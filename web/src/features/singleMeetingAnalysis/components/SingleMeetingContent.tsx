@@ -14,6 +14,7 @@ import {
   getAttendanceBySignupPeriodTableData
 } from "features/singleMeetingAnalysis/SingleMeetingAnalysisUtils";
 import { AttendeeData } from "features/singleMeetingAnalysis/SingleMeetingAnalysisTypes";
+import { postEvent } from "requests/eventRequest";
 
 type ContentProps = {
   setAttendees?: Function;
@@ -41,15 +42,30 @@ const SingleMeetingContent = ({
   return (
     <div>
       {setAttendees && attendees.length > 0 && (
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => {
-            setAttendees([]);
-          }}
-        >
-          Enter new Data
-        </Button>
+        <div>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => {
+              setAttendees([]);
+            }}
+          >
+            Enter new Data
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={async () => {
+              await postEvent({
+                eventName,
+                eventDate,
+                attendees
+              });
+            }}
+          >
+            Save Summary
+          </Button>
+        </div>
       )}
       {attendees.length > 0 && (
         <div style={{ maxWidth: "1280px", margin: "auto", padding: "40px" }}>
