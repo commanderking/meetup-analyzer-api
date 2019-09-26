@@ -9,6 +9,7 @@ import SignUpChartDaily from "features/singleMeetingAnalysis/components/SignUpCh
 import MemberTenureAttendanceTable from "features/singleMeetingAnalysis/components/MemberTenureAttendanceTable";
 import AttendanceBySignupDateTable from "features/singleMeetingAnalysis/components/AttendanceBySignupDateTable";
 import {
+  getSummaryData,
   getDailyAttendance,
   getAttendanceByMembershipLengthTableData,
   getAttendanceBySignupPeriodTableData
@@ -29,6 +30,7 @@ const SingleMeetingContent = ({
   eventDate,
   attendees
 }: ContentProps) => {
+  const summaryData = getSummaryData(attendees);
   const singupData = getDailyAttendance(attendees, eventDate);
   const tenureTableData = getAttendanceByMembershipLengthTableData(
     attendees,
@@ -77,7 +79,7 @@ const SingleMeetingContent = ({
           <Grid container spacing={2}>
             <Grid item md={3} sm={12} xs={12}>
               <Card style={{ height: "100%", padding: "10px" }}>
-                <SingleMeetupSummary attendees={attendees} />
+                <SingleMeetupSummary summaryData={summaryData} />
               </Card>
             </Grid>
             <Grid item md={9} sm={12} xs={12}>

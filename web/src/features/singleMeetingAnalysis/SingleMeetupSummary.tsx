@@ -2,21 +2,21 @@ import React from "react";
 import { getSummaryData } from "./SingleMeetingAnalysisUtils";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-import { AttendeeData } from "./SingleMeetingAnalysisTypes";
+import { SummaryData } from "./SingleMeetingAnalysisTypes";
 import Typography from "@material-ui/core/Typography";
 import AttendanceRatePieChart from "features/singleMeetingAnalysis/components/AttendanceRatePieChart";
 type Props = {
-  attendees: AttendeeData[];
+  summaryData: SummaryData;
 };
 
-export const SingleMeetupSummary = ({ attendees }: Props) => {
-  const summary = getSummaryData(attendees);
+export const SingleMeetupSummary = ({ summaryData }: Props) => {
   const {
     numberRSVPs,
     numberAttendees,
     attendeesWhoRSVPd,
-    attendeesWhoJoinedMeetupForEvent
-  } = summary;
+    attendeesWhoJoinedMeetupForEvent,
+    attendeesWithoutRSVP
+  } = summaryData;
 
   return (
     <div
@@ -37,6 +37,11 @@ export const SingleMeetupSummary = ({ attendees }: Props) => {
           numberRSVPs={numberRSVPs}
         />
         <div> {numberAttendees} Attendees</div>
+        {attendeesWithoutRSVP > 0 && (
+          <div>
+            <i>({attendeesWhoRSVPd} rsvped on meetup)</i>
+          </div>
+        )}
         <div> {numberRSVPs} RSVPs</div>
         <div>{attendeesWhoJoinedMeetupForEvent} New Members</div>
       </div>

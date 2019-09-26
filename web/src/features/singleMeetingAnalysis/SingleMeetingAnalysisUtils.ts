@@ -12,7 +12,8 @@ import {
   MembershipLengthTableRow,
   SignupPeriodTableRow,
   MembershipLengths,
-  DailyAttendance
+  DailyAttendance,
+  SummaryData
 } from "./SingleMeetingAnalysisTypes";
 
 // @ts-ignore
@@ -239,8 +240,8 @@ export const getAttendanceByMembershipLengthTableData = (
   ];
 };
 
-export const getSummaryData = (attendees: AttendeeData[]) => {
-  return attendees.reduce(
+export const getSummaryData = (attendees: AttendeeData[]): SummaryData => {
+  const baseSummaryData = attendees.reduce(
     (acc, currentAttendee) => {
       const { didRSVP, didAttend } = currentAttendee;
 
@@ -265,6 +266,12 @@ export const getSummaryData = (attendees: AttendeeData[]) => {
       attendeesWhoJoinedMeetupForEvent: 0
     }
   );
+
+  return {
+    ...baseSummaryData,
+    attendeesWithoutRSVP:
+      baseSummaryData.numberAttendees - baseSummaryData.attendeesWhoRSVPd
+  };
 };
 
 const getFirstDateAttendeeSignedUp = (attendees: AttendeeData[]) => {
