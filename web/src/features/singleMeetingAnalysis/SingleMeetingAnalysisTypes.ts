@@ -27,7 +27,7 @@ export type SummaryData = {
   numberRSVPs: number;
   numberAttendees: number;
   attendeesWhoRSVPd: number;
-  attendeesWhoJoinedMeetupForEvent: number;
+  attendeesWhoJoinedMeetupDuringEventWindow: number;
   attendeesWithoutRSVP: number;
 };
 

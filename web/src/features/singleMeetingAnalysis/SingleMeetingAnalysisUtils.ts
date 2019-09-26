@@ -137,13 +137,16 @@ const getRelativeRegistrationDate = (
 const isMeetupGroupMemberAttendee = (attendee: AttendeeData): boolean =>
   Boolean(attendee.didAttend && attendee.dateJoinedGroup && attendee.didRSVP);
 
-const isAttendeeWhoJoinedMeetupForEvent = (attendee: AttendeeData): boolean => {
+const isAttendeeWhoJoinedMeetupDuringEventWindow = (
+  attendee: AttendeeData,
+  firstDate: Date
+): boolean => {
   const { rsvpDate, dateJoinedGroup, didAttend } = attendee;
   return Boolean(
     rsvpDate &&
       dateJoinedGroup &&
       didAttend &&
-      moment(rsvpDate).isSame(dateJoinedGroup, "day")
+      moment(rsvpDate).isAfter(firstDate, "day")
   );
 };
 
@@ -241,10 +244,12 @@ export const getAttendanceByMembershipLengthTableData = (
 };
 
 export const getSummaryData = (attendees: AttendeeData[]): SummaryData => {
+  const firstDate = getFirstDateAttendeeSignedUp(attendees);
+  console.log("firstDate", firstDate);
+
   const baseSummaryData = attendees.reduce(
     (acc, currentAttendee) => {
       const { didRSVP, didAttend } = currentAttendee;
-
       return {
         ...acc,
         totalCount: acc.totalCount + 1,
@@ -253,9 +258,14 @@ export const getSummaryData = (attendees: AttendeeData[]): SummaryData => {
         attendeesWhoRSVPd:
           acc.attendeesWhoRSVPd +
           (isMeetupGroupMemberAttendee(currentAttendee) ? 1 : 0),
-        attendeesWhoJoinedMeetupForEvent:
-          acc.attendeesWhoJoinedMeetupForEvent +
-          (isAttendeeWhoJoinedMeetupForEvent(currentAttendee) ? 1 : 0)
+        attendeesWhoJoinedMeetupDuringEventWindow:
+          acc.attendeesWhoJoinedMeetupDuringEventWindow +
+          (isAttendeeWhoJoinedMeetupDuringEventWindow(
+            currentAttendee,
+            firstDate
+          )
+            ? 1
+            : 0)
       };
     },
     {
@@ -263,7 +273,7 @@ export const getSummaryData = (attendees: AttendeeData[]): SummaryData => {
       numberRSVPs: 0,
       numberAttendees: 0,
       attendeesWhoRSVPd: 0,
-      attendeesWhoJoinedMeetupForEvent: 0
+      attendeesWhoJoinedMeetupDuringEventWindow: 0
     }
   );
 

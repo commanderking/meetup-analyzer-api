@@ -1,5 +1,4 @@
 import React from "react";
-import { getSummaryData } from "./SingleMeetingAnalysisUtils";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { SummaryData } from "./SingleMeetingAnalysisTypes";
@@ -14,7 +13,7 @@ export const SingleMeetupSummary = ({ summaryData }: Props) => {
     numberRSVPs,
     numberAttendees,
     attendeesWhoRSVPd,
-    attendeesWhoJoinedMeetupForEvent,
+    attendeesWhoJoinedMeetupDuringEventWindow,
     attendeesWithoutRSVP
   } = summaryData;
 
@@ -43,7 +42,7 @@ export const SingleMeetupSummary = ({ summaryData }: Props) => {
           </div>
         )}
         <div> {numberRSVPs} RSVPs</div>
-        <div>{attendeesWhoJoinedMeetupForEvent} New Members</div>
+        <div>{attendeesWhoJoinedMeetupDuringEventWindow} New Members</div>
       </div>
     </div>
   );
