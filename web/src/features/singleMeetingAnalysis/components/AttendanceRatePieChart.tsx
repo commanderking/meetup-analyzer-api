@@ -31,6 +31,7 @@ const AttendanceRatePieChart = ({ attendeesWhoRSVPd, numberRSVPs }: Props) => {
         fill="#8884d8"
         dataKey="value"
         startAngle={-270}
+        isAnimationActive={false}
       >
         {data.map((entry: DataEntry, index) => {
           return <Cell key={`cell-${index}`} fill={entry.color} />;

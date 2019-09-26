@@ -87,11 +87,13 @@ const SignUpChartDaily = ({ data }: any) => {
           dataKey="attendedCount"
           stackId="a"
           fill={DesignColors.SIGNUP_DAILY_ATTENDED}
+          isAnimationActive={false}
         />
         <Bar
           dataKey="rsvpNotAttendedCount"
           stackId="a"
           fill={DesignColors.SIGNUP_DAILY_DID_NOT_ATTEND}
+          isAnimationActive={false}
         />
       </BarChart>
     </div>
