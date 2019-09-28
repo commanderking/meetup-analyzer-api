@@ -6,6 +6,8 @@ import DashboardContainer from "features/dashboard/DashboardContainer";
 import { EventsProvider } from "./context/eventsContext";
 import EventContainer from "./features/event/EventContainer";
 import AttendancePredictorContainer from "features/attendancePredictor/AttendancePredictorContainer";
+import { MuiThemeProvider } from "@material-ui/core/styles";
+import getMuiTheme from "themes/muiTheme";
 
 class App extends Component {
   render() {
@@ -14,23 +16,25 @@ class App extends Component {
     window.React = React;
     return (
       <Router>
-        <div className="App">
-          <Route path="/" exact component={SingleMeetingAnalysisContainer} />
-          <EventsProvider>
-            <Route
-              path="/dashboard"
-              render={props => <DashboardContainer {...props} />}
-            />
-            <Route
-              path="/event/:id"
-              render={props => <EventContainer {...props} />}
-            />
-            <Route
-              path="/prediction"
-              render={props => <AttendancePredictorContainer {...props} />}
-            />
-          </EventsProvider>
-        </div>
+        <MuiThemeProvider theme={getMuiTheme()}>
+          <div className="App">
+            <Route path="/" exact component={SingleMeetingAnalysisContainer} />
+            <EventsProvider>
+              <Route
+                path="/dashboard"
+                render={props => <DashboardContainer {...props} />}
+              />
+              <Route
+                path="/event/:id"
+                render={props => <EventContainer {...props} />}
+              />
+              <Route
+                path="/prediction"
+                render={props => <AttendancePredictorContainer {...props} />}
+              />
+            </EventsProvider>
+          </div>
+        </MuiThemeProvider>
       </Router>
     );
   }

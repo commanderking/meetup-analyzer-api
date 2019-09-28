@@ -24,22 +24,20 @@ const columns = [
 
 const MemberTenureAttendanceTable = ({ tenureTableData }: Props) => {
   return (
-    <div style={{ maxWidth: "100%" }}>
-      <MUIDataTable
-        columns={columns}
-        data={tenureTableData}
-        title="Attendance by Signup Period"
-        options={{
-          pagination: false,
-          filter: false,
-          selectableRows: "none",
-          search: false,
-          print: false,
-          download: false,
-          viewColumns: false
-        }}
-      />
-    </div>
+    <MUIDataTable
+      columns={columns}
+      data={tenureTableData}
+      title="Attendance by Signup Period"
+      options={{
+        pagination: false,
+        filter: false,
+        selectableRows: "none",
+        search: false,
+        print: false,
+        download: false,
+        viewColumns: false
+      }}
+    />
   );
 };
 
