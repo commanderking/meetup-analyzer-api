@@ -1,9 +1,9 @@
-import { FormControl, Button, Paper, Box, Typography } from '@material-ui/core';
-import React, {useContext, useState, useEffect } from "react";
+import { FormControl, Button, Paper, Box, Typography } from "@material-ui/core";
+import React, { useContext, useState, useEffect } from "react";
 
 import { FirebaseContext } from "auth/FirebaseContext";
 import { makeStyles } from "@material-ui/styles";
-import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 
 const useStyles = makeStyles({
   formControl: {
@@ -11,17 +11,17 @@ const useStyles = makeStyles({
   },
   formWrapper: {
     margin: "auto",
-    width: '425px',
-    padding: '50px'
+    width: "425px",
+    padding: "50px"
   },
   formPaper: {
-    padding: '25px'
+    padding: "25px"
   }
 });
 const SignupContainer = () => {
   const classes = useStyles();
 
-  const firebaseContext = useContext(FirebaseContext)
+  const firebaseContext = useContext(FirebaseContext);
   const { firebase } = firebaseContext;
 
   const [email, setEmail] = useState("");
@@ -29,17 +29,17 @@ const SignupContainer = () => {
   const [confirmedPassword, setConfirmedPassword] = useState("");
 
   useEffect(() => {
-    ValidatorForm.addValidationRule('isPasswordMatch', (value) => {
-      if(value !== password) {
+    ValidatorForm.addValidationRule("isPasswordMatch", value => {
+      if (value !== password) {
         return false;
-      };
+      }
       return true;
     });
-    
-  return () => {
-    ValidatorForm.removeValidationRule('isPasswordMatch');
-  }
-  }, [password])
+
+    return () => {
+      ValidatorForm.removeValidationRule("isPasswordMatch");
+    };
+  }, [password]);
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.currentTarget.value);
@@ -74,57 +74,60 @@ const SignupContainer = () => {
       <Paper className={classes.formPaper}>
         <ValidatorForm onSubmit={handleSubmit}>
           <Typography variant="h4">Sign Up</Typography>
-        <FormControl className={classes.formControl}>
-          <TextValidator
-            margin="normal"
-            label="Email"
-            variant="outlined"
-            name="email"
-            value={email}
-            placeholder=""
-            onChange={handleEmailChange}
-            required
-            validators={['required', 'isEmail']}
-            errorMessages={['Please enter an email', 'Email is not valid']}
-          />
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <TextValidator
-            margin="normal"
-            variant="outlined"
-            label="Password"
-            name="password"
-            type="password"
-            value={password}
-            validators={['required', 'minNumber:6']}
-            errorMessages={['Please enter a password', 'Password must have at least 6 characters']}
-            onChange={handlePasswordChange}
-            required
-          />
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <TextValidator
-            margin="normal"
-            variant="outlined"
-            label="Confirm Password"
-            name="password"
-            type="password"
-            value={confirmedPassword}
-            validators={['required', 'isPasswordMatch']}
-            errorMessages={['Please confirm password', 'Passwords must match']}
-            onChange={handleConfirmPasswordChange}
-            required
-          />
-        </FormControl>
-        <Button
-          variant="outlined"
-          type="submit"
-        >
-          Sign up
-        </Button>
-      </ValidatorForm>
-    </Paper>
-  </Box>
-  )
-}
+          <FormControl className={classes.formControl}>
+            <TextValidator
+              margin="normal"
+              label="Email"
+              variant="outlined"
+              name="email"
+              value={email}
+              placeholder=""
+              onChange={handleEmailChange}
+              required
+              validators={["required", "isEmail"]}
+              errorMessages={["Please enter an email", "Email is not valid"]}
+            />
+          </FormControl>
+          <FormControl className={classes.formControl}>
+            <TextValidator
+              margin="normal"
+              variant="outlined"
+              label="Password"
+              name="password"
+              type="password"
+              value={password}
+              validators={["required", "minNumber:6"]}
+              errorMessages={[
+                "Please enter a password",
+                "Password must have at least 6 characters"
+              ]}
+              onChange={handlePasswordChange}
+              required
+            />
+          </FormControl>
+          <FormControl className={classes.formControl}>
+            <TextValidator
+              margin="normal"
+              variant="outlined"
+              label="Confirm Password"
+              name="password"
+              type="password"
+              value={confirmedPassword}
+              validators={["required", "isPasswordMatch"]}
+              errorMessages={[
+                "Please confirm password",
+                "Passwords must match"
+              ]}
+              onChange={handleConfirmPasswordChange}
+              required
+            />
+          </FormControl>
+          <Button variant="outlined" type="submit">
+            Sign up
+          </Button>
+        </ValidatorForm>
+      </Paper>
+    </Box>
+  );
+};
 export default SignupContainer;

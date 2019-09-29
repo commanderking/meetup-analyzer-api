@@ -5,44 +5,27 @@ import DashboardContainer from "features/dashboard/DashboardContainer";
 import EventContainer from "features/event/EventContainer";
 import AttendancePredictorContainer from "features/attendancePredictor/AttendancePredictorContainer";
 import LoginContainer from "auth/LoginContainer";
-import SignupContainer from 'auth/SignupContainer';
-
+import SignupContainer from "auth/SignupContainer";
 
 const baseUrl = "base";
 const getPath = (path: string) => `/${baseUrl}/${path}`;
 
 const Routes = () => {
-    console.log('routes');
-    return (
-      <div className="App">
-        <Router>
-          <Route
-            path="/"
-            exact
-            component={SingleMeetingAnalysisContainer}
-          />
-            <Route
-              path={getPath("dashboard")}
-              component={ DashboardContainer }
-            />
-            <Route
-              path={getPath("event/:id")}
-              component={EventContainer}
-            />
-            <Route
-              path={getPath("prediction")}
-              component={AttendancePredictorContainer}
-            />
-            <Route
-              path={getPath("login")}
-              component={LoginContainer}
-            />
-            <Route
-              path={getPath("signup")}
-              component={SignupContainer}
-            />
-    </Router>
+  console.log("routes");
+  return (
+    <div className="App">
+      <Router>
+        <Route path="/" exact component={SingleMeetingAnalysisContainer} />
+        <Route path={getPath("dashboard")} component={DashboardContainer} />
+        <Route path={getPath("event/:id")} component={EventContainer} />
+        <Route
+          path={getPath("prediction")}
+          component={AttendancePredictorContainer}
+        />
+        <Route path={getPath("login")} component={LoginContainer} />
+        <Route path={getPath("signup")} component={SignupContainer} />
+      </Router>
     </div>
-    )
-}
-export default Routes; 
+  );
+};
+export default Routes;

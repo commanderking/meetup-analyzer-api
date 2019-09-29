@@ -55,7 +55,6 @@ const config = {
 // https://stackoverflow.com/questions/37557491/firebase-app-named-default-already-exists-google-firebase-reference-does-n
 const initializedFirebase = app.initializeApp(config).auth();
 
-
 export const FirebaseContext = React.createContext({
   firebase: null,
   user: null
@@ -64,19 +63,21 @@ export const FirebaseContext = React.createContext({
 export const FirebaseProvider = (props: {}) => {
   const [user, setUser] = useState(null);
 
-  console.log('initializedFirebase', initializedFirebase.onAuthStateChanged);
+  console.log("initializedFirebase", initializedFirebase.onAuthStateChanged);
   useEffect(() => {
-    console.log('useEffect', useEffect);
-    const userSubscription = initializedFirebase.onAuthStateChanged((user: any) => {
-      console.log('state changed');
-      user ? setUser(user) : setUser(null);
-    });
+    console.log("useEffect", useEffect);
+    const userSubscription = initializedFirebase.onAuthStateChanged(
+      (user: any) => {
+        console.log("state changed");
+        user ? setUser(user) : setUser(null);
+      }
+    );
     return userSubscription;
   }, []);
 
   const value = React.useMemo(() => {
     return {
-      firebase: initializedFirebase, 
+      firebase: initializedFirebase,
       user,
       setUser
     };
@@ -84,6 +85,3 @@ export const FirebaseProvider = (props: {}) => {
   // @ts-ignore
   return <FirebaseContext.Provider value={value} {...props} />;
 };
-
-
-
