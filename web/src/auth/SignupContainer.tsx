@@ -21,7 +21,8 @@ const useStyles = makeStyles({
 const SignupContainer = () => {
   const classes = useStyles();
 
-  const firebase = useContext(FirebaseContext)
+  const firebaseContext = useContext(FirebaseContext)
+  const { firebase } = firebaseContext;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

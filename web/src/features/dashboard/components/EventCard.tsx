@@ -49,7 +49,7 @@ const EventCard = ({ event }: Props) => {
         <EventCardStat stat={attendees} description="Attendees" />
         <EventCardStat stat={attendancePercent} description="Show Rate" />
       </div>
-      <RouterLink to={`/event/${id}`}>
+      <RouterLink to={`event/${id}`}>
         <Button color="primary" variant="outlined">
           Details
         </Button>

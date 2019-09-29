@@ -21,11 +21,11 @@ const useStyles = makeStyles({
 const LoginContainer = () => {
   const classes = useStyles();
 
-  const firebase = useContext(FirebaseContext)
+  const firebaseContext = useContext(FirebaseContext)
+  const { firebase } = firebaseContext;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmedPassword, setConfirmedPassword] = useState("");
 
   useEffect(() => {
     ValidatorForm.addValidationRule('isPasswordMatch', (value) => {
@@ -53,7 +53,7 @@ const LoginContainer = () => {
     console.log("event", event);
     // @ts-ignore
     firebase
-      .signIn(email, password)
+      .signInWithEmailAndPassword(email, password)
       .then((authUser: any) => {
 
         // authUser.user.uid - to get user id

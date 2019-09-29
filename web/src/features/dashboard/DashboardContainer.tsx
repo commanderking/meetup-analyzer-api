@@ -73,7 +73,7 @@ const DashboardContainer = () => {
         <Button variant="contained">Summarize Event</Button>
       </Link>
 
-      <Link to="/prediction">
+      <Link to="prediction">
         <Button variant="contained">Predict Attendance for Next Event</Button>
       </Link>
       <div
