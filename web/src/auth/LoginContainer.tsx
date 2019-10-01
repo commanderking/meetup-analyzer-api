@@ -55,10 +55,6 @@ const LoginContainer = () => {
     firebase
       .signInWithEmailAndPassword(email, password)
       .then((authUser: any) => {
-        // authUser.user.uid - to get user id
-        console.log("user id", authUser.user.uid);
-        console.log("token", authUser.user.getIdToken());
-        console.log("authUser", authUser);
       })
       .catch((error: any) => {
         console.log("error", error);
