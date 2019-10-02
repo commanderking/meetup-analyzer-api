@@ -65,10 +65,8 @@ export const FirebaseProvider = (props: {}) => {
 
   console.log("initializedFirebase", initializedFirebase.onAuthStateChanged);
   useEffect(() => {
-    console.log("useEffect", useEffect);
     const userSubscription = initializedFirebase.onAuthStateChanged(
       (user: any) => {
-        console.log("state changed");
         user ? setUser(user) : setUser(null);
       }
     );

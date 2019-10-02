@@ -6,15 +6,17 @@ import EventContainer from "features/event/EventContainer";
 import AttendancePredictorContainer from "features/attendancePredictor/AttendancePredictorContainer";
 import LoginContainer from "auth/LoginContainer";
 import SignupContainer from "auth/SignupContainer";
+import MenuBar from "common/components/MenuBar";
 
 const baseUrl = "base";
 const getPath = (path: string) => `/${baseUrl}/${path}`;
 
 const Routes = () => {
-  console.log("routes");
   return (
     <div className="App">
       <Router>
+        <MenuBar />
+
         <Route path="/" exact component={SingleMeetingAnalysisContainer} />
         <Route path={getPath("dashboard")} component={DashboardContainer} />
         <Route path={getPath("event/:id")} component={EventContainer} />

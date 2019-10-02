@@ -4,6 +4,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { FirebaseContext } from "auth/FirebaseContext";
 import { makeStyles } from "@material-ui/styles";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
+import { withRouter, RouteComponentProps } from "react-router-dom";
 
 const useStyles = makeStyles({
   formControl: {
@@ -18,7 +19,9 @@ const useStyles = makeStyles({
     padding: "25px"
   }
 });
-const LoginContainer = () => {
+
+const LoginContainer = (props: RouteComponentProps) => {
+  console.log(props);
   const classes = useStyles();
 
   const firebaseContext = useContext(FirebaseContext);
@@ -47,7 +50,6 @@ const LoginContainer = () => {
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.currentTarget.value);
   };
-
   const handleSubmit = (event: any) => {
     event.preventDefault();
     console.log("event", event);
@@ -55,6 +57,7 @@ const LoginContainer = () => {
     firebase
       .signInWithEmailAndPassword(email, password)
       .then((authUser: any) => {
+        props.history.push("/base/dashboard");
       })
       .catch((error: any) => {
         console.log("error", error);
@@ -102,4 +105,4 @@ const LoginContainer = () => {
     </Box>
   );
 };
-export default LoginContainer;
+export default withRouter(LoginContainer);
