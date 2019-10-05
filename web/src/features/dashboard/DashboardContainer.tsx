@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { useEventsCall } from "../../context/eventsHook";
@@ -11,6 +11,7 @@ import Button from "@material-ui/core/Button";
 // @ts-ignore
 import { Link } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
+import { FirebaseContext } from "auth/FirebaseContext";
 
 const loadMeetupSummaryData = async (setSummaryData: any) => {
   const data = await getMeetupSummaryData();
@@ -19,6 +20,7 @@ const loadMeetupSummaryData = async (setSummaryData: any) => {
 
 const DashboardContainer = () => {
   const { isLoading, events } = useEventsCall();
+  const { user, firebase } = useContext(FirebaseContext);
 
   const [summaryData, setSummaryData]: [
     MeetupSummaryDTO | null,
@@ -73,7 +75,7 @@ const DashboardContainer = () => {
         <Button variant="contained">Summarize Event</Button>
       </Link>
 
-      <Link to="/prediction">
+      <Link to="prediction">
         <Button variant="contained">Predict Attendance for Next Event</Button>
       </Link>
       <div

@@ -24,9 +24,9 @@ db.init_app(app)
 CORS(app)
 
 # Might need to reference here for heroku deployment: https://realpython.com/flask-by-example-part-2-postgres-sqlalchemy-and-alembic/
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+@app.route('/base/<path:path>')
 def single_page_app(path):
+    print(path)
     return render_template('index.html')
 
 
