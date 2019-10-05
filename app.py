@@ -12,6 +12,8 @@ from datetime import datetime
 from functools import wraps
 from flask_cors import cross_origin
 from flask_cors import CORS
+import google.auth.transport.requests
+import google.oauth2.id_token
 
 from eventPrediction.eventPredictionUtils import getLinearRegressionPrediction, getAttendanceRateForThoseAttendingSingleMeetup, getPredictedAttendeesOfMembers
 
@@ -23,10 +25,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 CORS(app)
 
+HTTP_REQUEST = google.auth.transport.requests.Request()
+
 # Might need to reference here for heroku deployment: https://realpython.com/flask-by-example-part-2-postgres-sqlalchemy-and-alembic/
 @app.route('/base/<path:path>')
 def single_page_app(path):
-    print(path)
     return render_template('index.html')
 
 
@@ -95,8 +98,23 @@ def events():
 
 @app.route('/attendance', methods=['POST'])
 def attendance():
+    print("hey")
+    # id_token = request.headers['Authorization'].split(' ').pop()
+    # print(id_token)
     try:
+        # print(id_token)
+        print(request.headers)
+        print('authorization')
+        id_token = request.headers['Authorization'].split(' ').pop()
+        print(id_token)
+        claims = google.oauth2.id_token.verify_firebase_token(
+            id_token, HTTP_REQUEST)
+        print('claims')
+        print(claims)
+        if not claims:
+            return 'Unauthorized', 401
         data = json.loads(request.data.decode("utf-8"))
+
         events = data["eventIds"]
         attendance = Attendance.query.filter(
             Attendance.event_id.in_(events)).all()
@@ -115,6 +133,7 @@ def attendance():
             })
         return jsonify(data=full_attendance)
     except Exception as exception:
+        print("in exception")
         print(exception)
         return "Bad Job"
 
