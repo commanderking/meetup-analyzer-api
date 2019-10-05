@@ -6,6 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import { Link } from "react-router-dom";
 import { FirebaseContext } from "auth/FirebaseContext";
+import { withRouter, RouteComponentProps } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,16 +22,17 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function MenuBar() {
+const MenuBar = (props: RouteComponentProps) => {
   const classes = useStyles();
 
   const { user, firebase } = useContext(FirebaseContext);
-
-  const handleLogout = (event: MouseEvent) => {
+  const handleLogout = async (event: MouseEvent) => {
     if (firebase) {
       event.preventDefault();
+
       // @ts-ignore - firebase can be null even with null check above?
-      firebase.signOut();
+      await firebase.signOut();
+      props.history.push("/base/login");
     }
   };
 
@@ -57,4 +59,6 @@ export default function MenuBar() {
       </AppBar>
     </div>
   );
-}
+};
+
+export default withRouter(MenuBar);

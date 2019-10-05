@@ -2,8 +2,10 @@ const BACKEND_BASE_URL = "localhost:5000";
 const ATTENDANCE_ENDPOINT = `http://${BACKEND_BASE_URL}/attendance`;
 
 export const getAttendanceForEvents = async (eventIds: number[], user: any) => {
-  if(!user) {
-    return;
+  debugger;
+
+  if (!user) {
+    return [];
   }
   try {
     const token = await user.getIdToken();
@@ -13,7 +15,7 @@ export const getAttendanceForEvents = async (eventIds: number[], user: any) => {
         eventIds
       }),
       headers: {
-        'Authorization': 'Bearer ' + token
+        Authorization: "Bearer " + token
       }
     });
     const dataJson = await data.json();

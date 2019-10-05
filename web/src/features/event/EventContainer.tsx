@@ -5,7 +5,7 @@ import moment from "moment";
 import { useEventsCall } from "../../context/eventsHook";
 import SingleMeetingContent from "features/singleMeetingAnalysis/components/SingleMeetingContent";
 import { RouteComponentProps } from "react-router-dom";
-import { FirebaseContext } from 'auth/FirebaseContext'
+import { FirebaseContext } from "auth/FirebaseContext";
 type MatchParams = {
   id: string;
 };
@@ -13,7 +13,11 @@ type MatchParams = {
 interface Props extends RouteComponentProps<MatchParams> {}
 
 // TODO: Update user with UserAuth Type
-const getAttendance = async (eventId: number, setAttendance: any, user: any) => {
+const getAttendance = async (
+  eventId: number,
+  setAttendance: any,
+  user: any
+) => {
   const attendance = await getAttendanceForEvents([eventId], user);
   await setAttendance(attendance);
 };

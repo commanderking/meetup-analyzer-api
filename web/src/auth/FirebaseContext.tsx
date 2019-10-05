@@ -62,8 +62,6 @@ export const FirebaseContext = React.createContext({
 
 export const FirebaseProvider = (props: {}) => {
   const [user, setUser] = useState(null);
-
-  console.log("initializedFirebase", initializedFirebase.onAuthStateChanged);
   useEffect(() => {
     const userSubscription = initializedFirebase.onAuthStateChanged(
       (user: any) => {

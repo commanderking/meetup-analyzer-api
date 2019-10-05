@@ -21,7 +21,6 @@ const useStyles = makeStyles({
 });
 
 const LoginContainer = (props: RouteComponentProps) => {
-  console.log(props);
   const classes = useStyles();
 
   const firebaseContext = useContext(FirebaseContext);
@@ -50,18 +49,16 @@ const LoginContainer = (props: RouteComponentProps) => {
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.currentTarget.value);
   };
-  const handleSubmit = (event: any) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
-    console.log("event", event);
     // @ts-ignore
-    firebase
+    await firebase
       .signInWithEmailAndPassword(email, password)
-      .then((authUser: any) => {
-        props.history.push("/base/dashboard");
-      })
+      .then((authUser: any) => {})
       .catch((error: any) => {
         console.log("error", error);
       });
+    props.history.push("/base/dashboard");
   };
 
   return (

@@ -245,7 +245,6 @@ export const getAttendanceByMembershipLengthTableData = (
 
 export const getSummaryData = (attendees: AttendeeData[]): SummaryData => {
   const firstDate = getFirstDateAttendeeSignedUp(attendees);
-  console.log("firstDate", firstDate);
 
   const baseSummaryData = attendees.reduce(
     (acc, currentAttendee) => {

@@ -57,13 +57,10 @@ const SignupContainer = () => {
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    console.log("event", event);
     // @ts-ignore
     firebase
       .createUser(email, password)
-      .then((authUser: any) => {
-        console.log("authUser", authUser);
-      })
+      .then((authUser: any) => {})
       .catch((error: any) => {
         console.log("error", error);
       });
