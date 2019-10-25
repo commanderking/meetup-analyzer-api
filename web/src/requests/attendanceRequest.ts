@@ -2,8 +2,6 @@ const BACKEND_BASE_URL = "localhost:5000";
 const ATTENDANCE_ENDPOINT = `http://${BACKEND_BASE_URL}/attendance`;
 
 export const getAttendanceForEvents = async (eventIds: number[], user: any) => {
-  debugger;
-
   if (!user) {
     return [];
   }

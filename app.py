@@ -98,19 +98,10 @@ def events():
 
 @app.route('/attendance', methods=['POST'])
 def attendance():
-    print("hey")
-    # id_token = request.headers['Authorization'].split(' ').pop()
-    # print(id_token)
     try:
-        # print(id_token)
-        print(request.headers)
-        print('authorization')
         id_token = request.headers['Authorization'].split(' ').pop()
-        print(id_token)
         claims = google.oauth2.id_token.verify_firebase_token(
             id_token, HTTP_REQUEST)
-        print('claims')
-        print(claims)
         if not claims:
             return 'Unauthorized', 401
         data = json.loads(request.data.decode("utf-8"))
@@ -149,6 +140,11 @@ def meetupSummary():
             Attendance.did_rsvp).count()
         uniqueAttendees = Attendance.query.filter(
             Attendance.did_attend, Attendance.did_rsvp).distinct(Attendance.meetup_user_id).count()
+        nonMeetupAttendees = Attendance.query.filter(
+            Attendance.meetup_user_id == None).count()
+
+        print(nonMeetupAttendees)
+
         uniqueRSVPs = Attendance.query.filter(
             Attendance.did_rsvp).distinct(Attendance.meetup_user_id).count()
 
@@ -159,6 +155,9 @@ def meetupSummary():
 
         uniqueAttendeesThisYear = Attendance.query.join(Events).filter(
             Attendance.did_attend, Attendance.did_rsvp, Events.event_date >= dateTimedFirstDateOfYear).distinct(Attendance.meetup_user_id).count()
+
+        nonMeetupAttendeesThisYear = Attendance.query.join(Events).filter(
+            Attendance.meetup_user_id == None, Events.event_date >= dateTimedFirstDateOfYear).count()
 
         attendeesThisYear = Attendance.query.join(Events).filter(
             Events.event_date >= dateTimedFirstDateOfYear, Attendance.did_attend).count()
@@ -179,11 +178,8 @@ def meetupSummary():
         counts = Attendance.query.group_by(
             Attendance.meetup_user_id).filter().with_entities(Attendance.meetup_user_id, func.count(Attendance.id)).all()
 
-        print(counts)
-
         test = Attendance.query.join(Events).filter(
             Events.event_date >= dateTimedFirstDateOfYear, Attendance.did_attend)
-        print(test.filter(Attendance.did_rsvp).all())
 
         meetupGroupSummary = {
             "attendeesWhoRSVPd": meetupAttendees,
@@ -191,9 +187,11 @@ def meetupSummary():
             "totalRSVPs": totalRSVPs,
             "uniqueAttendees": uniqueAttendees,
             "uniqueRSVPs": uniqueRSVPs,
+            "nonMeetupAttendees": nonMeetupAttendees,
             "currentYear": {
                 "totalAttendees": attendeesThisYear,
                 "uniqueAttendees": uniqueAttendeesThisYear,
+                "nonMeetupAttendees": nonMeetupAttendeesThisYear,
                 "attendeesWhoRSVPd": attendeesWhoRSVPdThisYear,
                 "totalRSVPs": rsvpsThisYear,
                 "uniqueRSVPs": uniqueRSVPsThisYear,

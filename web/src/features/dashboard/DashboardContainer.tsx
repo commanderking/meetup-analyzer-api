@@ -21,7 +21,7 @@ const loadMeetupSummaryData = async (setSummaryData: any) => {
 const DashboardContainer = () => {
   const { isLoading, events } = useEventsCall();
   const { user, firebase } = useContext(FirebaseContext);
-
+  console.log("dashboardUser", user);
   const [summaryData, setSummaryData]: [
     MeetupSummaryDTO | null,
     any
@@ -30,7 +30,7 @@ const DashboardContainer = () => {
     loadMeetupSummaryData(setSummaryData);
   }, []);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading || !user) return <div>Loading...</div>;
 
   if (!summaryData) return <div>Loading...</div>;
 
@@ -39,7 +39,8 @@ const DashboardContainer = () => {
     totalAttendees,
     totalRSVPs,
     uniqueAttendees,
-    uniqueRSVPs
+    uniqueRSVPs,
+    nonMeetupAttendees
   } = currentYear;
   return (
     <div>
@@ -65,7 +66,8 @@ const DashboardContainer = () => {
           <AttendanceCard headerText="Total RSVPs" bodyText={totalRSVPs} />
           <AttendanceCard
             headerText="Unique Attendees"
-            bodyText={uniqueAttendees}
+            bodyText={`${uniqueAttendees} - ${uniqueAttendees +
+              nonMeetupAttendees}`}
           />
           <AttendanceCard headerText="Unique RSVPs" bodyText={uniqueRSVPs} />
         </div>
