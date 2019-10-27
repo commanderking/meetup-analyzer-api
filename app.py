@@ -206,6 +206,43 @@ def meetupSummary():
         return "Bad Job"
 
 
+@app.route('/meetup/attendanceByUser', methods=['POST'])
+def meetupAttendance():
+    try:
+        data = json.loads(request.data.decode("utf-8"))
+        minRSVPs = data["minRSVPs"]
+
+        attendance = (
+            Attendance.query
+            .filter(Attendance.meetup_user_id != None)
+            .with_entities(
+                Attendance.meetup_user_id,
+                func.count(case([((Attendance.did_attend == True), 1)],
+                                else_=literal_column("NULL"))).label('attendedCount'),
+                func.count(case([((Attendance.did_rsvp == True), 1)],
+                                else_=literal_column("NULL"))).label('rsvpedCount'),
+            )
+            .group_by(Attendance.meetup_user_id)
+            .having(func.count(Attendance.did_attend) >= minRSVPs)
+            .all()
+        )
+
+        meetupUsers = []
+        for meetupUser in attendance:
+            (id, attendedCount, rsvpedCount) = meetupUser
+            meetupUsers.append({
+                "id": id,
+                "attendedCount": attendedCount,
+                "rsvpedCount": rsvpedCount
+            })
+        return jsonify(data={
+            "attendanceByUser": meetupUsers
+        })
+    except Exception as exception:
+        print(exception)
+        return "Bad Job"
+
+
 @app.route('/event/prediction', methods=['POST'])
 def prediction():
     data = json.loads(request.data.decode("utf-8"))
@@ -274,7 +311,7 @@ def prediction():
         .all()
     )
 
-    # Loop through events to get the previous attendane rate prior to each event
+    # Loop through events to get the previous attendance rate prior to each event
     events_with_attendees = []
     for event in events:
         (event_id, event_name, event_date,
