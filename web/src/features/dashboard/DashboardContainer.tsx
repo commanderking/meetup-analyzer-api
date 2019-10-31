@@ -12,6 +12,7 @@ import Button from "@material-ui/core/Button";
 import { Link } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import { FirebaseContext } from "auth/FirebaseContext";
+import EventsTable from "features/dashboard/components/EventsTable";
 
 const loadMeetupSummaryData = async (setSummaryData: any) => {
   const data = await getMeetupSummaryData();
@@ -20,8 +21,8 @@ const loadMeetupSummaryData = async (setSummaryData: any) => {
 
 const DashboardContainer = () => {
   const { isLoading, events } = useEventsCall();
-  const { user, firebase } = useContext(FirebaseContext);
-  console.log("dashboardUser", user);
+  // const { user, firebase } = useContext(FirebaseContext);
+  // console.log("dashboardUser", user);
   const [summaryData, setSummaryData]: [
     MeetupSummaryDTO | null,
     any
@@ -30,7 +31,7 @@ const DashboardContainer = () => {
     loadMeetupSummaryData(setSummaryData);
   }, []);
 
-  if (isLoading || !user) return <div>Loading...</div>;
+  // if (isLoading || !user) return <div>Loading...</div>;
 
   if (!summaryData) return <div>Loading...</div>;
 
@@ -89,6 +90,7 @@ const DashboardContainer = () => {
         `}
       >
         <h3>Event Details</h3>
+        <EventsTable events={events} />
         <Grid container spacing={3}>
           {events.map((event: EventResponse) => (
             <Grid item xs={12} sm={6} md={4}>
