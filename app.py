@@ -379,5 +379,15 @@ def prediction():
     })
 
 
+@app.route('/meetupapi', methods=['POST'])
+def meetup_api():
+    data = json.loads(request.data.decode("utf-8"))
+    accessToken = data["accessToken"]
+    r = requests.get('https://api.meetup.com/Boston-EdTech-Meetup/members',
+                     headers={'Authorization': accessToken})
+    data = r.json()
+    return jsonify(data=data)
+
+
 if __name__ == '__main__':
     app.run()
