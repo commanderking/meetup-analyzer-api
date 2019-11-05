@@ -22,6 +22,7 @@ numpy = "*"
 sklearn = "*"
 pytest = "*"
 google-auth = "*"
+requests-futures = "*"
 
 [requires]
 python_version = "3.5"
