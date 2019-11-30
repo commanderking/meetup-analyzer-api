@@ -7,6 +7,7 @@ import AttendancePredictorContainer from "features/attendancePredictor/Attendanc
 import LoginContainer from "auth/LoginContainer";
 import SignupContainer from "auth/SignupContainer";
 import MenuBar from "common/components/MenuBar";
+import GroupMembersContainer from "features/groupMembers/GroupMembersContainer";
 
 const baseUrl = "base";
 const getPath = (path: string) => `/${baseUrl}/${path}`;
@@ -26,6 +27,10 @@ const Routes = () => {
         />
         <Route path={getPath("login")} component={LoginContainer} />
         <Route path={getPath("signup")} component={SignupContainer} />
+        <Route
+          path={getPath("groupmembers")}
+          component={GroupMembersContainer}
+        />
       </Router>
     </div>
   );

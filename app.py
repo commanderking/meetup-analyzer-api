@@ -3,12 +3,13 @@ from extensions import db
 from flask import Flask, request, jsonify, _request_ctx_stack, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func, case, literal_column
+from requests_futures.sessions import FuturesSession
 
 import os
 import json
 import requests
 from datetime import datetime
-
+import time
 from functools import wraps
 from flask_cors import cross_origin
 from flask_cors import CORS
@@ -35,7 +36,6 @@ def single_page_app(path):
 
 @app.route('/events', methods=['GET', 'POST'])
 def events():
-
     if request.method == "POST":
         my_data = json.loads(request.data.decode('utf-8'))
         name = my_data['eventDate']
@@ -377,6 +377,116 @@ def prediction():
         "singleAttendanceCountAndRSVPs": singleAttendanceCountAndRSVPs,
         "regressionPrediction": regressionPrediction
     })
+
+
+@app.route('/meetupapi/questions', methods=['POST'])
+def meetup_api():
+    session = FuturesSession()
+    future_one = session.get(
+        'https://api.meetup.com/Boston-EdTech-Meetup/members?page=200&offset=0')
+    future_two = session.get(
+        'https://api.meetup.com/Boston-EdTech-Meetup/members?page=200&offset=1'
+    )
+    future_three = session.get(
+        'https://api.meetup.com/Boston-EdTech-Meetup/members?page=200&offset=2'
+    )
+    future_four = session.get(
+        'https://api.meetup.com/Boston-EdTech-Meetup/members?page=200&offset=3'
+    )
+    future_five = session.get(
+        'https://api.meetup.com/Boston-EdTech-Meetup/members?page=200&offset=4'
+    )
+
+    response_one = future_one.result().json()
+    response_two = future_two.result().json()
+    response_three = future_three.result().json()
+    response_four = future_four.result().json()
+    response_five = future_five.result().json()
+
+    most_recent_one_thousand_members = response_one + response_two + \
+        response_three + response_four + response_five
+
+    # data = json.loads(request.data.decode("utf-8"))
+    # accessToken = data["accessToken"]
+
+    # Could uncomment if we need want to make sure user visited meetup within past year
+    # currentTime = int(round(time.time() * 1000))
+    # millisecondsInOneYear = 365 * 24 * 60 * 60 * 1000
+    # groupQuestions = []
+
+    # For now hardcode to first question, future version may loop through all questions to get proper response
+    def member_has_answers(member):
+        return member['group_profile']['answers'][0].get("answer")
+
+    active_members = [
+        member for member in most_recent_one_thousand_members if member_has_answers(member)]
+
+    answers = [member['group_profile']['answers']
+               [0].get('answer') for member in active_members]
+
+    roleKeywords = {
+        'engineer': ['engineer', 'QA', 'developer', 'programmer'],
+        'educator': ['educator', 'teacher', 'professor', 'tutor', 'instructor', 'lecturer'],
+        'entrepreneur': ['entrepreneur', 'founder'],
+        'student': ['student'],
+        'researcher': ['researcher'],
+        'director': ['director'],
+        'product_manager': ['product manager', 'producer', 'head of product', 'product owner', 'product management'],
+        'designer': ['ux designer', 'product designer', 'ui designer', 'interactive designer'],
+        'curriculum_content_developer': ['content developer', 'curriculum developer', 'curriculum designer'],
+        'learning_instructional_design': ['eLearining Designer', 'learning designer', 'instructional designer', 'learing design'],
+        'business_development': ['business dev', 'biz dev', 'business development'],
+        'consultant': ['consultant'],
+        'data_scientist': ['data scientist'],
+        'recruiter_talent': ['recruiting', 'talent'],
+        'attorney': ['advocate', 'attorney', 'lawyer'],
+        'coach': ['coach'],
+        'data_analyst': ['data analyst'],
+        'nonprofit': ['nonprofit'],
+        'relationship_manager': ['relationship manager'],
+        'manager': ['manager', 'management'],
+        'marketer': ['marketing', 'marketer'],
+        'administrator': ['administrator', 'admin'],
+        'director': ['director'],
+        'sales': ['sales'],
+        'investor': ['investor'],
+        'technologist': ['technologist'],
+        'ux': ['ux']
+    }
+
+    role_keys = roleKeywords.keys()
+
+    role_counts = {key: 0 for key in role_keys}
+
+    total_count = 0
+    non_matched_answers = []
+    # This is awful - figure out to mmake this more readable
+    for answer in answers:
+        has_matched_one_role = False
+        for key in role_keys:
+            keywordMatches = roleKeywords[key]
+            match_found = False
+            for keyword in keywordMatches:
+                if (match_found):
+                    break
+                if (keyword.lower() in answer.lower()):
+                    role_counts[key] += 1
+                    match_found = True
+                    # if has_already_matched_one_key is not True:
+                    has_matched_one_role = True
+        if (has_matched_one_role is True):
+            total_count += 1
+        else:
+            non_matched_answers.append(answer)
+
+    responseData = {
+        "role_counts": role_counts,
+        "total_count": total_count,
+        "non_matched_answers": non_matched_answers,
+        "raw_answers": answers
+    }
+
+    return jsonify(data=responseData)
 
 
 if __name__ == '__main__':
