@@ -450,7 +450,8 @@ def meetup_api():
         'director': ['director'],
         'sales': ['sales'],
         'investor': ['investor'],
-        'technologist': ['technologist']
+        'technologist': ['technologist'],
+        'ux': ['ux']
     }
 
     role_keys = roleKeywords.keys()
@@ -481,7 +482,8 @@ def meetup_api():
     responseData = {
         "role_counts": role_counts,
         "total_count": total_count,
-        "non_matched_answers": non_matched_answers
+        "non_matched_answers": non_matched_answers,
+        "raw_answers": answers
     }
 
     return jsonify(data=responseData)
