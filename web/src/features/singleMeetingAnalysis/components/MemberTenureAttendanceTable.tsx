@@ -27,7 +27,7 @@ const MemberTenureAttendanceTable = ({ tenureTableData }: Props) => {
     <MUIDataTable
       columns={columns}
       data={tenureTableData}
-      title="Attendance by Signup Period"
+      title="Attendance by Membership Length"
       options={{
         pagination: false,
         filter: false,

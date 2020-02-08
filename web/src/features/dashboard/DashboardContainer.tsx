@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, ChangeEvent } from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { useEventsCall } from "../../context/eventsHook";
@@ -13,6 +13,22 @@ import { Link } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import { FirebaseContext } from "auth/FirebaseContext";
 import EventsTable from "features/dashboard/components/EventsTable";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import { makeStyles } from "@material-ui/core/styles";
+import { isEventInYear } from "features/dashboard/dashboardUtils";
+import { Years, YearsEnum } from "common/enum/Years";
+
+const useStyles = makeStyles(theme => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2)
+  }
+}));
 
 const loadMeetupSummaryData = async (setSummaryData: any) => {
   const data = await getMeetupSummaryData();
@@ -27,9 +43,25 @@ const DashboardContainer = () => {
     MeetupSummaryDTO | null,
     any
   ] = useState(null);
+  const classes = useStyles();
+
+  const [selectedYear, setSelectedYear]: [Years, any] = useState<Years>("ALL");
   useEffect(() => {
     loadMeetupSummaryData(setSummaryData);
   }, []);
+
+  const handleChange = (
+    event: ChangeEvent<{ name?: string | undefined; value: unknown }>
+  ) => {
+    if (event) {
+      // @ts-ignore
+      setSelectedYear(event.target.value);
+    }
+  };
+
+  const eventsInSelectedYear = events.filter(event =>
+    isEventInYear(event, selectedYear)
+  );
 
   // if (isLoading || !user) return <div>Loading...</div>;
 
@@ -53,6 +85,18 @@ const DashboardContainer = () => {
         `}
       >
         <h3>Year to Date Statistics (2019)</h3>
+        <FormControl variant="outlined" className={classes.formControl}>
+          <Select
+            id="demo-simple-select-outlined"
+            value={selectedYear}
+            onChange={handleChange}
+          >
+            <MenuItem value="ALL">All</MenuItem>
+            <MenuItem value="2020">2020</MenuItem>
+            <MenuItem value="2019">2019</MenuItem>
+            <MenuItem value="2018">2018</MenuItem>
+          </Select>
+        </FormControl>
         <div
           id="SingleMeetupSummary"
           css={css`
@@ -90,9 +134,9 @@ const DashboardContainer = () => {
         `}
       >
         <h3>Event Details</h3>
-        <EventsTable events={events} />
+        <EventsTable events={eventsInSelectedYear} />
         <Grid container spacing={3}>
-          {events.map((event: EventResponse) => (
+          {eventsInSelectedYear.map((event: EventResponse) => (
             <Grid item xs={12} sm={6} md={4}>
               <EventCard key={event.id} event={event} />
             </Grid>
