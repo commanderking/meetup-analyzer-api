@@ -8,6 +8,7 @@ import { FirebaseProvider } from "auth/FirebaseContext";
 import RoutesContainer from "routes/RoutesContainer";
 import { EventsProvider } from "context/eventsContext";
 
+
 const App = () => {
   return (
     <FirebaseProvider>
