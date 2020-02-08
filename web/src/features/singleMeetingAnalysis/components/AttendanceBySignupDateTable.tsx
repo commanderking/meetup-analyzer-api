@@ -27,7 +27,7 @@ const AttendanceBySignupDateTable = ({ data }: Props) => {
     <MUIDataTable
       columns={columns}
       data={data}
-      title="Attendance by Membership Length"
+      title="Attendance by Signup Date"
       options={{
         pagination: false,
         filter: false,
