@@ -2,7 +2,7 @@ from models import Events, Attendance
 from extensions import db
 from flask import Flask, request, jsonify, _request_ctx_stack, render_template
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func, case, literal_column
+from sqlalchemy.sql import func, case, literal_column, and_
 from requests_futures.sessions import FuturesSession
 
 import os
@@ -129,9 +129,22 @@ def attendance():
         return "Bad Job"
 
 
-@app.route('/meetup/summary', methods=['GET'])
+@app.route('/meetup/summary', methods=['POST'])
 def meetupSummary():
     try:
+        data = json.loads(request.data.decode("utf-8"))
+        year = data['year']
+        
+        # Meetup data no relevant before 2018
+        earliestDate = "2018/01/01"
+        latestDate = datetime.today().strftime("%Y/%m/%d")
+
+        print(latestDate)
+        if year != "ALL": 
+            earliestDate = f"{year}/01/01"
+            latestDate = f"{year}/12/31"
+            
+
         meetupAttendees = Attendance.query.filter(
             Attendance.did_attend, Attendance.did_rsvp).count()
         totalAttendees = Attendance.query.filter(
@@ -148,31 +161,34 @@ def meetupSummary():
         uniqueRSVPs = Attendance.query.filter(
             Attendance.did_rsvp).distinct(Attendance.meetup_user_id).count()
 
-        # Need to be smarter about this - hardcoded just for 2019
-        firstDateOfYear = "2019/01/01"
+
         dateTimedFirstDateOfYear = datetime.strptime(
-            firstDateOfYear, "%Y/%m/%d")
+            earliestDate, "%Y/%m/%d")
+        
+        dateTimeLastDateOfYear = datetime.strptime(latestDate, "%Y/%m/%d")
+
+        isInDateRange = and_(Events.event_date >= dateTimedFirstDateOfYear, Events.event_date <= dateTimeLastDateOfYear)
 
         uniqueAttendeesThisYear = Attendance.query.join(Events).filter(
-            Attendance.did_attend, Attendance.did_rsvp, Events.event_date >= dateTimedFirstDateOfYear).distinct(Attendance.meetup_user_id).count()
+            Attendance.did_attend, Attendance.did_rsvp, isInDateRange).distinct(Attendance.meetup_user_id).count()
 
         nonMeetupAttendeesThisYear = Attendance.query.join(Events).filter(
-            Attendance.meetup_user_id == None, Events.event_date >= dateTimedFirstDateOfYear).count()
+            Attendance.meetup_user_id == None, isInDateRange).count()
 
         attendeesThisYear = Attendance.query.join(Events).filter(
-            Events.event_date >= dateTimedFirstDateOfYear, Attendance.did_attend).count()
+            isInDateRange, Attendance.did_attend).count()
 
         attendeesWhoRSVPdThisYear = Attendance.query.join(Events).filter(
-            Attendance.did_rsvp, Attendance.did_attend, Events.event_date >= dateTimedFirstDateOfYear, Attendance.did_attend).count()
+            Attendance.did_rsvp, Attendance.did_attend, isInDateRange, Attendance.did_attend).count()
 
         uniqueRSVPsThisYear = Attendance.query.join(Events).filter(
-            Attendance.did_rsvp, Events.event_date >= dateTimedFirstDateOfYear).distinct(Attendance.meetup_user_id).count()
+            Attendance.did_rsvp, isInDateRange).distinct(Attendance.meetup_user_id).count()
 
         rsvpsThisYear = Attendance.query.join(Events).filter(
-            Attendance.did_rsvp, Events.event_date >= dateTimedFirstDateOfYear).count()
+            Attendance.did_rsvp, isInDateRange).count()
 
         participationThisYear = Attendance.query.join(Events).filter(
-            Events.event_date >= dateTimedFirstDateOfYear).count()
+            isInDateRange).count()
 
         # SELECT COUNT(id), meetup_user_id FROM event_attendance GROUP BY meetup_user_id;
         counts = Attendance.query.group_by(

@@ -18,7 +18,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import { makeStyles } from "@material-ui/core/styles";
 import { isEventInYear } from "features/dashboard/dashboardUtils";
-import { Years, YearsEnum } from "common/enum/Years";
+import { Years } from "common/enum/Years";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -27,8 +27,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const loadMeetupSummaryData = async (setSummaryData: any) => {
-  const data = await getMeetupSummaryData();
+const loadMeetupSummaryData = async (setSummaryData: any, year: Years) => {
+  const data = await getMeetupSummaryData(year);
   setSummaryData(data);
 };
 
@@ -44,8 +44,8 @@ const DashboardContainer = () => {
 
   const [selectedYear, setSelectedYear]: [Years, any] = useState<Years>("ALL");
   useEffect(() => {
-    loadMeetupSummaryData(setSummaryData);
-  }, []);
+    loadMeetupSummaryData(setSummaryData, selectedYear);
+  }, [selectedYear]);
 
   const handleChange = (
     event: ChangeEvent<{ name?: string | undefined; value: unknown }>
