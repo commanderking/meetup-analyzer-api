@@ -17,6 +17,7 @@ import google.auth.transport.requests
 import google.oauth2.id_token
 
 from eventPrediction.eventPredictionUtils import getLinearRegressionPrediction, getAttendanceRateForThoseAttendingSingleMeetup, getPredictedAttendeesOfMembers
+from events.eventUtils import getDateRange
 
 app = Flask(__name__, static_folder="web/build/static",
             template_folder="web/build")
@@ -133,16 +134,12 @@ def attendance():
 def meetupSummary():
     try:
         data = json.loads(request.data.decode("utf-8"))
+        print(data)
         year = data['year']
         
-        # Meetup data no relevant before 2018
-        earliestDate = "2018/01/01"
-        latestDate = datetime.today().strftime("%Y/%m/%d")
-
-        print(latestDate)
-        if year != "ALL": 
-            earliestDate = f"{year}/01/01"
-            latestDate = f"{year}/12/31"
+        dateRange = getDateRange(year)
+        earliestDate = dateRange["earliestDate"]
+        latestDate = dateRange["latestDate"]
             
 
         meetupAttendees = Attendance.query.filter(
@@ -156,18 +153,10 @@ def meetupSummary():
         nonMeetupAttendees = Attendance.query.filter(
             Attendance.meetup_user_id == None).count()
 
-        print(nonMeetupAttendees)
-
         uniqueRSVPs = Attendance.query.filter(
             Attendance.did_rsvp).distinct(Attendance.meetup_user_id).count()
 
-
-        dateTimedFirstDateOfYear = datetime.strptime(
-            earliestDate, "%Y/%m/%d")
-        
-        dateTimeLastDateOfYear = datetime.strptime(latestDate, "%Y/%m/%d")
-
-        isInDateRange = and_(Events.event_date >= dateTimedFirstDateOfYear, Events.event_date <= dateTimeLastDateOfYear)
+        isInDateRange = and_(Events.event_date >= earliestDate, Events.event_date <= latestDate)
 
         uniqueAttendeesThisYear = Attendance.query.join(Events).filter(
             Attendance.did_attend, Attendance.did_rsvp, isInDateRange).distinct(Attendance.meetup_user_id).count()
@@ -193,9 +182,6 @@ def meetupSummary():
         # SELECT COUNT(id), meetup_user_id FROM event_attendance GROUP BY meetup_user_id;
         counts = Attendance.query.group_by(
             Attendance.meetup_user_id).filter().with_entities(Attendance.meetup_user_id, func.count(Attendance.id)).all()
-
-        test = Attendance.query.join(Events).filter(
-            Events.event_date >= dateTimedFirstDateOfYear, Attendance.did_attend)
 
         meetupGroupSummary = {
             "attendeesWhoRSVPd": meetupAttendees,
@@ -226,11 +212,18 @@ def meetupSummary():
 def meetupAttendance():
     try:
         data = json.loads(request.data.decode("utf-8"))
-        minRSVPs = data["minRSVPs"]
+        minAttendances = data["minAttendances"]
+        year = data["year"] or 'ALL'
+
+        dateRange = getDateRange(year)
+        earliestDate = dateRange["earliestDate"]
+        latestDate = dateRange["latestDate"]
+        isInDateRange = and_(Events.event_date >= earliestDate, Events.event_date <= latestDate)
 
         attendance = (
             Attendance.query
-            .filter(Attendance.meetup_user_id != None)
+            .join(Events)
+            .filter(Attendance.meetup_user_id != None, isInDateRange)
             .with_entities(
                 Attendance.meetup_user_id,
                 func.count(case([((Attendance.did_attend == True), 1)],
@@ -239,7 +232,7 @@ def meetupAttendance():
                                 else_=literal_column("NULL"))).label('rsvpedCount'),
             )
             .group_by(Attendance.meetup_user_id)
-            .having(func.count(Attendance.did_attend) >= minRSVPs)
+            .having(func.count(Attendance.did_attend) >= minAttendances)
             .all()
         )
 
