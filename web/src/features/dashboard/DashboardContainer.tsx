@@ -64,14 +64,13 @@ const DashboardContainer = () => {
 
   if (!summaryData) return <div>Loading...</div>;
 
-  const { currentYear } = summaryData;
   const {
     totalAttendees,
     totalRSVPs,
     uniqueAttendees,
     uniqueRSVPs,
     nonMeetupAttendees
-  } = currentYear;
+  } = summaryData;
   return (
     <div>
       <div

@@ -184,21 +184,13 @@ def meetupSummary():
             Attendance.meetup_user_id).filter().with_entities(Attendance.meetup_user_id, func.count(Attendance.id)).all()
 
         meetupGroupSummary = {
-            "attendeesWhoRSVPd": meetupAttendees,
-            "totalAttendees": totalAttendees,
-            "totalRSVPs": totalRSVPs,
-            "uniqueAttendees": uniqueAttendees,
-            "uniqueRSVPs": uniqueRSVPs,
-            "nonMeetupAttendees": nonMeetupAttendees,
-            "currentYear": {
-                "totalAttendees": attendeesThisYear,
-                "uniqueAttendees": uniqueAttendeesThisYear,
-                "nonMeetupAttendees": nonMeetupAttendeesThisYear,
-                "attendeesWhoRSVPd": attendeesWhoRSVPdThisYear,
-                "totalRSVPs": rsvpsThisYear,
-                "uniqueRSVPs": uniqueRSVPsThisYear,
-                "participation": participationThisYear
-            }
+            "totalAttendees": attendeesThisYear,
+            "uniqueAttendees": uniqueAttendeesThisYear,
+            "nonMeetupAttendees": nonMeetupAttendeesThisYear,
+            "attendeesWhoRSVPd": attendeesWhoRSVPdThisYear,
+            "totalRSVPs": rsvpsThisYear,
+            "uniqueRSVPs": uniqueRSVPsThisYear,
+            "participation": participationThisYear
         }
 
         return jsonify(data=meetupGroupSummary)
