@@ -18,12 +18,16 @@ const loadEvents = async (setApiState: any, setEvents: any) => {
 
   try {
     const events = await getEvents();
-    setEvents(events);
-    setApiState((prevState: ApiState) => ({
-      ...prevState,
-      isLoading: false,
-      events
-    }));
+
+    if (events) {
+      setEvents(events);
+      setApiState((prevState: ApiState) => ({
+        ...prevState,
+        isLoading: false,
+        events
+      }));
+    }
+
   } catch (err) {
     setApiState((prevState: ApiState) => ({
       ...prevState,

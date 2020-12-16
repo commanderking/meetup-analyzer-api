@@ -34,6 +34,7 @@ const loadMeetupSummaryData = async (setSummaryData: any, year: Years) => {
 
 const DashboardContainer = () => {
   const { isLoading, events } = useEventsCall();
+  console.log('events', events);
   // const { user, firebase } = useContext(FirebaseContext);
   // console.log("dashboardUser", user);
   const [summaryData, setSummaryData]: [
@@ -80,7 +81,7 @@ const DashboardContainer = () => {
           }
         `}
       >
-        <h3>Year to Date Statistics (2019)</h3>
+        <h3>Event Statistics</h3>
         <FormControl variant="outlined" className={classes.formControl}>
           <Select
             id="demo-simple-select-outlined"
@@ -97,9 +98,10 @@ const DashboardContainer = () => {
           id="SingleMeetupSummary"
           css={css`
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
           `}
         >
+          <AttendanceCard headerText="Events" bodyText={eventsInSelectedYear.length} />
           <AttendanceCard
             headerText="Total Attendees"
             bodyText={totalAttendees}

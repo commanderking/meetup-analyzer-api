@@ -23,6 +23,7 @@ sklearn = "*"
 pytest = "*"
 google-auth = "*"
 requests-futures = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"

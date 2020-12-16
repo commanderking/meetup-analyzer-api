@@ -10,7 +10,7 @@ export const postEvent = async (eventWithAttendees: EventWithAttendees) => {
     const data = await fetch(EVENT_ENDPOINT, {
       method: "POST",
       mode: "no-cors",
-      body: JSON.stringify(eventWithAttendees)
+      body: JSON.stringify(eventWithAttendees),
     });
 
     const dataJson = await data.json();
@@ -23,7 +23,7 @@ export const postEvent = async (eventWithAttendees: EventWithAttendees) => {
 export const getEvents = async () => {
   try {
     const data = await fetch(EVENT_ENDPOINT, {
-      method: "GET"
+      method: "GET",
     });
 
     const dataJson = await data.json();
