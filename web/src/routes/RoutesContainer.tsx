@@ -8,6 +8,7 @@ import LoginContainer from "auth/LoginContainer";
 import SignupContainer from "auth/SignupContainer";
 import MenuBar from "common/components/MenuBar";
 import GroupMembersContainer from "features/groupMembers/GroupMembersContainer";
+import YearlyAttendanceContaniner from "features/attendanceYearly/Container";
 
 const baseUrl = "base";
 const getPath = (path: string) => `/${baseUrl}/${path}`;
@@ -30,6 +31,10 @@ const Routes = () => {
         <Route
           path={getPath("groupmembers")}
           component={GroupMembersContainer}
+        />
+        <Route
+          path={getPath("yearlyattendance")}
+          component={YearlyAttendanceContaniner}
         />
       </Router>
     </div>

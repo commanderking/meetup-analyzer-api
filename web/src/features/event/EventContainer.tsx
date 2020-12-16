@@ -18,7 +18,7 @@ const getAttendance = async (
   setAttendance: any,
   user: any
 ) => {
-  const attendance = await getAttendanceForEvents([eventId], user);
+  const attendance = await getAttendanceForEvents([eventId]);
   await setAttendance(attendance);
 };
 
@@ -28,7 +28,7 @@ const EventContainer = ({ match }: Props) => {
   const { user } = useContext(FirebaseContext);
 
   const { events } = useEventsState();
-  const event = events.find(event => event.id === parseInt(match.params.id));
+  const event = events.find((event) => event.id === parseInt(match.params.id));
   useEffect(() => {
     if (event) {
       getAttendance(event.id, setAttendance, user);
@@ -39,14 +39,13 @@ const EventContainer = ({ match }: Props) => {
   if (!event) return <div>No event found</div>;
 
   const eventDateFormatted = moment.utc(event.date).format("MM/DD/YY");
-
-  return (
+  return attendance ? (
     <SingleMeetingContent
       attendees={attendance}
       eventDate={eventDateFormatted}
       eventName={event.name}
     />
-  );
+  ) : null;
 };
 
 export default EventContainer;

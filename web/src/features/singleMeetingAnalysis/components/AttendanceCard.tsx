@@ -33,7 +33,7 @@ const AttendanceCard = ({
           }
         `}
       >
-        <h4
+        <h5
           css={css`
              {
               background-color: ${DesignColors.THEME_1};
@@ -42,7 +42,7 @@ const AttendanceCard = ({
           `}
         >
           {headerText}
-        </h4>
+        </h5>
         <div
           css={css`
              {
@@ -50,7 +50,7 @@ const AttendanceCard = ({
             }
           `}
         >
-          <h2
+          <h3
             css={css`
                {
                 margin-bottom: 0;
@@ -58,7 +58,7 @@ const AttendanceCard = ({
             `}
           >
             {bodyText}
-          </h2>
+          </h3>
           {subBodyText && <div>({subBodyText})</div>}
         </div>
       </div>

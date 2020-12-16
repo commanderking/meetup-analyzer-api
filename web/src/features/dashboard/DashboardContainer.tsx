@@ -20,11 +20,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { isEventInYear } from "features/dashboard/dashboardUtils";
 import { Years } from "common/enum/Years";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 120
-  }
+    minWidth: 120,
+  },
 }));
 
 const loadMeetupSummaryData = async (setSummaryData: any, year: Years) => {
@@ -56,7 +56,7 @@ const DashboardContainer = () => {
     }
   };
 
-  const eventsInSelectedYear = events.filter(event =>
+  const eventsInSelectedYear = events.filter((event) =>
     isEventInYear(event, selectedYear)
   );
 
@@ -69,7 +69,7 @@ const DashboardContainer = () => {
     totalRSVPs,
     uniqueAttendees,
     uniqueRSVPs,
-    nonMeetupAttendees
+    nonMeetupAttendees,
   } = summaryData;
   return (
     <div>
@@ -80,7 +80,7 @@ const DashboardContainer = () => {
           }
         `}
       >
-        <h3>Year to Date Statistics (2019)</h3>
+        <h3>Event Statistics</h3>
         <FormControl variant="outlined" className={classes.formControl}>
           <Select
             id="demo-simple-select-outlined"
@@ -97,9 +97,13 @@ const DashboardContainer = () => {
           id="SingleMeetupSummary"
           css={css`
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
           `}
         >
+          <AttendanceCard
+            headerText="Events"
+            bodyText={eventsInSelectedYear.length}
+          />
           <AttendanceCard
             headerText="Total Attendees"
             bodyText={totalAttendees}

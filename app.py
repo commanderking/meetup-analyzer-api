@@ -100,11 +100,12 @@ def events():
 @app.route('/attendance', methods=['POST'])
 def attendance():
     try:
-        id_token = request.headers['Authorization'].split(' ').pop()
-        claims = google.oauth2.id_token.verify_firebase_token(
-            id_token, HTTP_REQUEST)
-        if not claims:
-            return 'Unauthorized', 401
+        # Remove authorization while local
+        # id_token = request.headers['Authorization'].split(' ').pop()
+        # claims = google.oauth2.id_token.verify_firebase_token(
+        #     id_token, HTTP_REQUEST)
+        # if not claims:
+        #     return 'Unauthorized', 401
         data = json.loads(request.data.decode("utf-8"))
 
         events = data["eventIds"]
@@ -128,7 +129,6 @@ def attendance():
         print("in exception")
         print(exception)
         return "Bad Job"
-
 
 @app.route('/meetup/summary', methods=['POST'])
 def meetupSummary():
@@ -224,7 +224,8 @@ def meetupAttendance():
                                 else_=literal_column("NULL"))).label('rsvpedCount'),
             )
             .group_by(Attendance.meetup_user_id)
-            .having(func.count(Attendance.did_attend) >= minAttendances)
+            .having(func.count(case([((Attendance.did_attend == True), 1)],
+                                else_=literal_column("NULL"))) >= minAttendances)
             .all()
         )
 
