@@ -29,7 +29,6 @@ const EventContainer = ({ match }: Props) => {
 
   const { events } = useEventsState();
   const event = events.find((event) => event.id === parseInt(match.params.id));
-  console.log("event", event);
   useEffect(() => {
     if (event) {
       getAttendance(event.id, setAttendance, user);

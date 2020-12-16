@@ -130,11 +130,6 @@ def attendance():
         print(exception)
         return "Bad Job"
 
-
-# @app.route('/meetup/attendeeYearlyAttendance', methods=['GET'])
-# def 
-
-
 @app.route('/meetup/summary', methods=['POST'])
 def meetupSummary():
     try:
