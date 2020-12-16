@@ -20,11 +20,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { isEventInYear } from "features/dashboard/dashboardUtils";
 import { Years } from "common/enum/Years";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 120
-  }
+    minWidth: 120,
+  },
 }));
 
 const loadMeetupSummaryData = async (setSummaryData: any, year: Years) => {
@@ -34,7 +34,6 @@ const loadMeetupSummaryData = async (setSummaryData: any, year: Years) => {
 
 const DashboardContainer = () => {
   const { isLoading, events } = useEventsCall();
-  console.log('events', events);
   // const { user, firebase } = useContext(FirebaseContext);
   // console.log("dashboardUser", user);
   const [summaryData, setSummaryData]: [
@@ -57,7 +56,7 @@ const DashboardContainer = () => {
     }
   };
 
-  const eventsInSelectedYear = events.filter(event =>
+  const eventsInSelectedYear = events.filter((event) =>
     isEventInYear(event, selectedYear)
   );
 
@@ -70,7 +69,7 @@ const DashboardContainer = () => {
     totalRSVPs,
     uniqueAttendees,
     uniqueRSVPs,
-    nonMeetupAttendees
+    nonMeetupAttendees,
   } = summaryData;
   return (
     <div>
@@ -101,7 +100,10 @@ const DashboardContainer = () => {
             grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
           `}
         >
-          <AttendanceCard headerText="Events" bodyText={eventsInSelectedYear.length} />
+          <AttendanceCard
+            headerText="Events"
+            bodyText={eventsInSelectedYear.length}
+          />
           <AttendanceCard
             headerText="Total Attendees"
             bodyText={totalAttendees}

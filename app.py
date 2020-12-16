@@ -207,8 +207,6 @@ def meetupAttendance():
         minAttendances = data["minAttendances"]
         year = data["year"] or 'ALL'
 
-        print(minAttendances)
-
         dateRange = getDateRange(year)
         earliestDate = dateRange["earliestDate"]
         latestDate = dateRange["latestDate"]

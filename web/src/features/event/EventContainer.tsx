@@ -39,7 +39,6 @@ const EventContainer = ({ match }: Props) => {
   if (!event) return <div>No event found</div>;
 
   const eventDateFormatted = moment.utc(event.date).format("MM/DD/YY");
-  console.log("attendance", attendance);
   return attendance ? (
     <SingleMeetingContent
       attendees={attendance}
