@@ -9,14 +9,14 @@ const YearlyAttendanceChart = ({ year, attendanceGroups }: Props) => {
   return (
     <div>
       <h4>{year}</h4>
-      <p style={{ width: "400px", margin: "auto", textAlign: "left" }}>
-        Members who attended...
+      <p style={{ width: "500px", margin: "auto", textAlign: "center" }}>
+        Members who RSVPed to at least one event attended...
       </p>
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "100px 300px",
-          width: "400px",
+          gridTemplateColumns: "100px 400px",
+          width: "500px",
           margin: "auto",
           columnGap: "10px",
         }}

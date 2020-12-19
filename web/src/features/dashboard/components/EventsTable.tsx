@@ -9,8 +9,6 @@ type Props = {
 const columns = [
   { name: "name", label: "Event", options: { sort: false } },
   { name: "date", label: "Date" },
-  { name: "attendeesWhoRsvpd", label: "Attendees who RSVPed" },
-  { name: "rsvps", label: "RSVPs" },
   { name: "attendees", label: "Attendees" },
   {
     name: "meetupAttendancePercent",
@@ -18,14 +16,16 @@ const columns = [
     options: {
       customBodyRender: (percent: number) => {
         return `${percent}%`;
-      }
-    }
+      },
+    },
     // options: {
     //   customBodyRender: (attendancePercent: number) => (
     //     <AttendancePercentProgressBar attendancePercent={attendancePercent} />
     //   )
     // }
-  }
+  },
+  { name: "attendeesWhoRsvpd", label: "Attendees who RSVPed" },
+  { name: "rsvps", label: "RSVPs" },
 ];
 
 const EventsTable = ({ events }: Props) => {
@@ -42,7 +42,7 @@ const EventsTable = ({ events }: Props) => {
         search: false,
         print: false,
         download: false,
-        viewColumns: false
+        viewColumns: false,
       }}
     />
   );
