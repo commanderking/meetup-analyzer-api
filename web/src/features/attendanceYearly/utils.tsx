@@ -1,20 +1,23 @@
 import _ from "lodash";
 import { AttendanceCount } from "./types";
 
-export const getGroupsByEventsAttended = (attendees: AttendanceCount[]) => {
+export const getGroupsByCount = (
+  attendees: AttendanceCount[],
+  countType: "attendedCount" | "rsvpedCount"
+) => {
   const attendeesByAttendanceCount = _.groupBy(attendees, (attendee) => {
-    if (attendee.attendedCount >= 5) {
+    if (attendee[countType] >= 5) {
       return "5+";
     }
-    return attendee.attendedCount;
+    return attendee[countType];
   });
 
   const attendanceCounts = Object.keys(attendeesByAttendanceCount);
 
   return attendanceCounts.map((count) => {
     return {
-      attendanceCount: count,
-      memberCount: attendeesByAttendanceCount[count].length,
+      category: count,
+      count: attendeesByAttendanceCount[count].length,
     };
   });
 };
@@ -29,27 +32,11 @@ export const getAttendeesOfXEvents = (eventsAttended: number) => (
   return attendeesOfXEvents;
 };
 
+// I.e - we want to know for members who attended 1 event, how many RSVps did they make?
 export const getRSVPsForAttendeesOfXEvents = (eventsAttended: number) => (
   attendees: AttendanceCount[]
 ) => {
   const filteredAttendees = getAttendeesOfXEvents(eventsAttended)(attendees);
 
-  const attendeesByAttendanceCount = _.groupBy(
-    filteredAttendees,
-    (attendee) => {
-      if (attendee.rsvpedCount >= 5) {
-        return "5+";
-      }
-      return attendee.rsvpedCount;
-    }
-  );
-
-  const attendanceCounts = Object.keys(attendeesByAttendanceCount);
-
-  return attendanceCounts.map((count) => {
-    return {
-      rsvpCount: count,
-      memberCount: attendeesByAttendanceCount[count].length,
-    };
-  });
+  return getGroupsByCount(filteredAttendees, "rsvpedCount");
 };
