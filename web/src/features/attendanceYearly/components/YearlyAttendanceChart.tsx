@@ -22,16 +22,16 @@ const YearlyAttendanceChart = ({ year, attendanceGroups }: Props) => {
         }}
       >
         {attendanceGroups.map((group) => {
-          const { attendanceCount, memberCount } = group;
+          const { category, count } = group;
           return (
             <React.Fragment>
               <div style={{ textAlign: "right" }}>
-                {attendanceCount} {attendanceCount === "1" ? "event" : "events"}
+                {category} {category === "1" ? "event" : "events"}
               </div>
-              <svg width={memberCount + 50} height={20}>
-                <rect fill={"lightblue"} width={memberCount} height={20}></rect>
-                <text x={memberCount + 5} y={15}>
-                  {memberCount}
+              <svg width={count + 50} height={20}>
+                <rect fill={"lightblue"} width={count} height={20}></rect>
+                <text x={count + 5} y={15}>
+                  {count}
                 </text>
               </svg>
             </React.Fragment>
