@@ -25,6 +25,7 @@ const YearlyAttendanceContainer = () => {
 
   const groups2020 = getGroupsByCount(attendees2020, "attendedCount");
   const groups2019 = getGroupsByCount(attendees2019, "attendedCount");
+
   return (
     <div>
       <h3>Yearly Attendance</h3>
