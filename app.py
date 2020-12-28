@@ -383,7 +383,6 @@ def prediction():
 @app.route('/meetupapi/events', methods=['GET'])
 def meetup_api_events():
     events = requests.get("https://api.meetup.com/Boston-EdTech-Meetup/events?status=past")
-    print(events.json())
 
     return jsonify(events.json())  
 
@@ -441,7 +440,7 @@ def meetup_api():
         'researcher': ['researcher'],
         'director': ['director'],
         'product_manager': ['product manager', 'producer', 'head of product', 'product owner', 'product management'],
-        'designer': ['ux designer', 'product designer', 'ui designer', 'interactive designer', 'designer'],
+        'designer': ['ux designer', 'product designer', 'ui designer', 'interactive designer'],
         'curriculum_content_developer': ['content developer', 'curriculum developer', 'curriculum designer'],
         'learning_instructional_design': ['eLearining Designer', 'learning designer', 'instructional designer', 'learing design'],
         'business_development': ['business dev', 'biz dev', 'business development'],

@@ -18,8 +18,6 @@ const YearlyEventsContainer = () => {
 
   const eventsChart = getYearlyEventsChart(events);
 
-  console.log("eventsChart", eventsChart);
-
   return (
     <div>
       <div style={{ margin: "auto", width: "500px", display: "block" }}>

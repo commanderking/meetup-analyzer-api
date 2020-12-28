@@ -2,7 +2,7 @@ import moment from "moment";
 import { RawEvent } from "./types";
 import _ from "lodash";
 
-export const getEventsByYear = (events: RawEvent[]) => {
+const getEventsByYear = (events: RawEvent[]) => {
   const eventsByYear = _.groupBy(events, (event) =>
     moment(event.local_date).year()
   );
@@ -23,8 +23,6 @@ export const getYearlyEventsChart = (events: RawEvent[]) => {
       rsvpCount,
     };
   });
-
-  console.log("chartData", chartData);
 
   return chartData;
 };
