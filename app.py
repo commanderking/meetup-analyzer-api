@@ -380,6 +380,12 @@ def prediction():
         "regressionPrediction": regressionPrediction
     })
 
+@app.route('/meetupapi/events', methods=['GET'])
+def meetup_api_events():
+    events = requests.get("https://api.meetup.com/Boston-EdTech-Meetup/events?status=past")
+
+    return jsonify(events.json())  
+
 
 @app.route('/meetupapi/questions', methods=['POST'])
 def meetup_api():
