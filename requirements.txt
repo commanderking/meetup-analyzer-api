@@ -18,7 +18,7 @@ importlib-metadata==1.1.0 ; python_version < '3.8'
 itsdangerous==1.1.0
 jinja2==2.10.3
 joblib==0.14.0
-mako==1.1.0
+mako==1.2.2
 markupsafe==1.1.1
 more-itertools==8.0.0
 numpy==1.17.4
